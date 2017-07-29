@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Diagnostics;
 using Xunit;
 
@@ -6,11 +7,21 @@ namespace KrakenCore.Tests
 {
     public partial class KrakenClientTests : IDisposable
     {
-        const string ApiKey = "<INSERT_KEY>";
+        readonly KrakenClient _client;
 
-        readonly KrakenClient _client = new KrakenClient(ApiKey);
+        public KrakenClientTests()
+        {
+            var configBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
+            IConfigurationRoot config = configBuilder.Build();
 
-        public KrakenClientTests() => _client = new KrakenClient(ApiKey);
+            string apiKey = config["ApiKey"];
+
+            if (!Enum.TryParse(config["AccountTier"], out AccountTier accountTier))
+                accountTier = AccountTier.Unknown;
+
+            _client = new KrakenClient(apiKey, accountTier);
+        }
+
         public void Dispose() => _client.Dispose();
 
 

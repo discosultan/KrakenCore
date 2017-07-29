@@ -1,7 +1,7 @@
 ﻿using KrakenCore.Models;
 using Xunit;
 
-namespace KrakenCore.Tests
+namespace KrakenCore.Tests.Models
 {
     public class ErrorStringTests
     {

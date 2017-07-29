@@ -16,20 +16,33 @@ namespace KrakenCore
     /// </summary>
     public partial class KrakenClient : IDisposable
     {
-        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             ContractResolver = new SnakeCasePropertyNamesContractResolved()
         };
 
-        private readonly HttpClient _httpClient = new HttpClient();
-        private readonly HMACSHA512 _sha512ApiKey;
-        private readonly SHA256 _sha256 = SHA256.Create();
-        private readonly Func<long> _getNonce;
+        static readonly Dictionary<AccountTier, (int Limit, TimeSpan DecreaseTime)> TierInfo
+            = new Dictionary<AccountTier, (int, TimeSpan)>(3)
+            {
+                [AccountTier.Tier2] = (15, TimeSpan.FromSeconds(3)),
+                [AccountTier.Tier3] = (20, TimeSpan.FromSeconds(2)),
+                [AccountTier.Tier4] = (20, TimeSpan.FromSeconds(1))
+            };
+
+        readonly HttpClient _httpClient = new HttpClient();
+        readonly HMACSHA512 _sha512ApiKey;
+        readonly SHA256 _sha256 = SHA256.Create();
+        readonly RateLimiter _rateLimiter; // Nullable.
+        readonly Func<long> _getNonce;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KrakenClient"/> class.
         /// </summary>
         /// <param name="apiKey">Key required to make queries to the API.</param>
+        /// <param name="accountTier">
+        /// Account tier at Kraken Exchange. This is used to enable API call rate limiter. To
+        /// disable, use <see cref="AccountTier.Unknown"/>.
+        /// </param>
         /// <param name="baseAddress">Base address of the API.</param>
         /// <param name="getNonce">
         /// Getter function for a nonce.
@@ -38,15 +51,20 @@ namespace KrakenCore
         /// </param>
         public KrakenClient(
             string apiKey,
+            AccountTier accountTier = AccountTier.Unknown,
             string baseAddress = "https://api.kraken.com",
             Func<long> getNonce = null)
         {
-            ApiKey = apiKey      ?? throw new ArgumentNullException(nameof(apiKey));
-            _getNonce = getNonce ?? (() => DateTime.UtcNow.Ticks);
+            ApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
 
+            if (TierInfo.TryGetValue(accountTier, out var info))
+                _rateLimiter = new RateLimiter(info.Limit, info.DecreaseTime, new Stopwatch());
+
+            _httpClient.BaseAddress = new Uri(baseAddress ?? throw new ArgumentNullException(nameof(baseAddress)));
             _sha512ApiKey = new HMACSHA512(Convert.FromBase64String(apiKey));
             _httpClient.DefaultRequestHeaders.Add("API-Key", apiKey);
-            _httpClient.BaseAddress = new Uri(baseAddress ?? throw new ArgumentNullException(nameof(baseAddress)));
+
+            _getNonce = getNonce ?? (() => DateTime.UtcNow.Ticks);
         }
 
         public string ApiKey { get; }
@@ -110,7 +128,7 @@ namespace KrakenCore
             string absoluteUri = _httpClient.BaseAddress + requestUri;
             byte[] absoluteUriBytes = Encoding.UTF8.GetBytes(absoluteUri);
 
-            byte[] dataBytes = _sha256.ComputeHash(Encoding.UTF8.GetBytes(nonce + json));
+            byte[] dataBytes = _sha256.ComputeHash(Encoding.UTF8.GetBytes(nonce.ToString() /*+ json*/));
 
             var buffer = new byte[absoluteUriBytes.Length + dataBytes.Length];
             Buffer.BlockCopy(absoluteUriBytes, 0, buffer, 0, absoluteUriBytes.Length);
