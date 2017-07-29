@@ -11,7 +11,7 @@ namespace KrakenCore
         /// </summary>
         public Task<KrakenResponse<ServerTime>> GetServerTime()
         {
-            return Get<ServerTime>("/0/public/Time");
+            return QueryPublic<ServerTime>("/Time");
         }
 
         /// <param name="info">
@@ -31,9 +31,9 @@ namespace KrakenCore
             string assetClass = null,
             string assets = null)
         {
-            return Get<Dictionary<string, AssetInfo>> (
-                "/0/public/Assets",
-                new Dictionary<string, object>(3)
+            return QueryPublic<Dictionary<string, AssetInfo>> (
+                "/Assets",
+                new Dictionary<string, string>(3)
                 {
                     ["info"] = info,
                     ["aclass"] = assetClass,
@@ -55,9 +55,9 @@ namespace KrakenCore
             string info = null,
             string pairs = null)
         {
-            return Get<Dictionary<string, AssetPair>>(
-                "/0/public/AssetPairs",
-                new Dictionary<string, object>(2)
+            return QueryPublic<Dictionary<string, AssetPair>>(
+                "/AssetPairs",
+                new Dictionary<string, string>(2)
                 {
                     ["info"] = info,
                     ["pair"] = pairs
@@ -70,9 +70,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair names and their ticker info.</returns>
         public Task<KrakenResponse<Dictionary<string, TickerInformation>>> GetTickerInformation(string pairs)
         {
-            return Get<Dictionary<string, TickerInformation>> (
-                "/0/public/Ticker",
-                new Dictionary<string, object>(1)
+            return QueryPublic<Dictionary<string, TickerInformation>> (
+                "/Ticker",
+                new Dictionary<string, string>(1)
                 {
                     ["pair"] = pairs
                 }
@@ -92,13 +92,13 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and OHLC data</returns>
         public Task<KrakenResponse<OhlcData>> GetOhlcData(string pair, int? interval = null, long? since = null)
         {
-            return Get<OhlcData>(
-                "/0/public/OHLC",
-                new Dictionary<string, object>(3)
+            return QueryPublic<OhlcData>(
+                "/OHLC",
+                new Dictionary<string, string>(3)
                 {
                     ["pair"] = pair,
-                    ["interval"] = interval,
-                    ["since"] = since
+                    ["interval"] = interval?.ToString(),
+                    ["since"] = since?.ToString()
                 }
             );
         }
@@ -108,12 +108,12 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and market depth.</returns>
         public Task<KrakenResponse<Dictionary<string, OrderBook>>> GetOrderBook(string pair, int? count = null)
         {
-            return Get<Dictionary<string, OrderBook>>(
-                "/0/public/Depth",
-                new Dictionary<string, object>(2)
+            return QueryPublic<Dictionary<string, OrderBook>>(
+                "/Depth",
+                new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["count"] = count
+                    ["count"] = count?.ToString()
                 }
             );
         }
@@ -123,12 +123,12 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and recent trade data.</returns>
         public Task<KrakenResponse<RecentTradesData>> GetRecentTrades(string pair, long? since = null)
         {
-            return Get<RecentTradesData>(
-                "/0/public/Trades",
-                new Dictionary<string, object>(2)
+            return QueryPublic<RecentTradesData>(
+                "/Trades",
+                new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["since"] = since
+                    ["since"] = since?.ToString()
                 }
             );
         }
@@ -142,12 +142,12 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and recent spread data.</returns>
         public Task<KrakenResponse<SpreadData>> GetRecentSpreadData(string pair, long? since = null)
         {
-            return Get<SpreadData>(
-                "/0/public/Spread",
-                new Dictionary<string, object>(2)
+            return QueryPublic<SpreadData>(
+                "/Spread",
+                new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["since"] = since
+                    ["since"] = since?.ToString()
                 }
             );
         }

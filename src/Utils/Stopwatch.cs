@@ -7,12 +7,14 @@ namespace KrakenCore.Utils
     interface IStopwatch
     {
         TimeSpan Elapsed { get; }
+
         void Restart();
     }
 
     class Stopwatch : IStopwatch
     {
-        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly System.Diagnostics.Stopwatch _stopwatch
+            = new System.Diagnostics.Stopwatch();
 
         public TimeSpan Elapsed => _stopwatch.Elapsed;
 

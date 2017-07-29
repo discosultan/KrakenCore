@@ -8,7 +8,7 @@ namespace KrakenCore
     {
         public Task<KrakenResponse<object>> GetAccountBalance()
         {
-            return Post<object>("/private/Balance");
+            return QueryPrivate<object>("/Balance");
         }
     }
 }

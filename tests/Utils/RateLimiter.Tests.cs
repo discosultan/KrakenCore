@@ -25,22 +25,36 @@ namespace KrakenCore.Tests.Utils
         [Fact]
         public async Task WaitAccess_NotLimited()
         {
-            Assert.False(await _rateLimiter.WaitAccess());
+            Assert.False(await _rateLimiter.WaitAccess(1));
+        }
+
+        [Fact]
+        public async Task WaitAccess_DoubleRate_Limited()
+        {
+            Assert.True(await _rateLimiter.WaitAccess(2));
         }
 
         [Fact]
         public async Task WaitAccess_NoTimePassed_Limited()
         {
-            await _rateLimiter.WaitAccess();
-            Assert.True(await _rateLimiter.WaitAccess());
+            await _rateLimiter.WaitAccess(1);
+            Assert.True(await _rateLimiter.WaitAccess(1));
         }
 
         [Fact]
         public async Task WaitAccess_EnoughTimePassed_NotLimited()
         {
-            await _rateLimiter.WaitAccess();
+            await _rateLimiter.WaitAccess(1);
             _stopwatch.Elapsed = CallCounterDecreaseTime;
-            Assert.False(await _rateLimiter.WaitAccess());
+            Assert.False(await _rateLimiter.WaitAccess(1));
+        }
+
+        [Fact]
+        public async Task WaitAccess_DoubleRateHalfTimePassed_Limited()
+        {
+            await _rateLimiter.WaitAccess(2);
+            _stopwatch.Elapsed = CallCounterDecreaseTime;
+            Assert.True(await _rateLimiter.WaitAccess(1));
         }
     }
 
