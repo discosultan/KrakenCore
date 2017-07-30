@@ -3,7 +3,7 @@ using System.Text;
 
 namespace KrakenCore.Utils
 {
-    class SnakeCasePropertyNamesContractResolved : DefaultContractResolver
+    internal class SnakeCasePropertyNamesContractResolved : DefaultContractResolver
     {
         protected override string ResolvePropertyName(string propertyName)
         {

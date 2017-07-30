@@ -31,7 +31,7 @@ namespace KrakenCore
             string assetClass = null,
             string assets = null)
         {
-            return QueryPublic<Dictionary<string, AssetInfo>> (
+            return QueryPublic<Dictionary<string, AssetInfo>>(
                 "/0/public/Assets",
                 new Dictionary<string, string>(3)
                 {
@@ -74,7 +74,7 @@ namespace KrakenCore
         /// <returns>Dictionary of pair names and their ticker info.</returns>
         public Task<KrakenResponse<Dictionary<string, TickerInfo>>> GetTickerInformation(string pairs)
         {
-            return QueryPublic<Dictionary<string, TickerInfo>> (
+            return QueryPublic<Dictionary<string, TickerInfo>>(
                 "/0/public/Ticker",
                 new Dictionary<string, string>(1)
                 {

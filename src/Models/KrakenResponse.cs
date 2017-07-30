@@ -7,6 +7,7 @@ namespace KrakenCore.Models
     {
         [JsonProperty("error")]
         public List<ErrorString> Errors { get; set; }
+
         public T Result { get; set; } // Nullable
     }
 }

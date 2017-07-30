@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 [assembly: InternalsVisibleTo("KrakenCore.Tests")]
 
 namespace KrakenCore.Utils
 {
     // Not thread safe.
-    class RateLimiter
+    internal class RateLimiter
     {
-        readonly int _counterLimit;
-        readonly TimeSpan _counterDecreaseTime;
-        readonly IStopwatch _stopwatch;
+        private readonly int _counterLimit;
+        private readonly TimeSpan _counterDecreaseTime;
+        private readonly IStopwatch _stopwatch;
 
-        int _callCounter;
+        private int _callCounter;
 
         public RateLimiter(int limit, TimeSpan decreaseTime, IStopwatch stopwatch)
         {

@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace KrakenCore.Utils
 {
-    class JsonArrayToStructConverter : JsonConverter
+    internal class JsonArrayToStructConverter : JsonConverter
     {
         public override bool CanWrite => false;
 

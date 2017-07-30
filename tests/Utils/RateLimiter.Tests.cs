@@ -1,17 +1,17 @@
-﻿using System;
+﻿using KrakenCore.Utils;
+using System;
 using System.Threading.Tasks;
-using KrakenCore.Utils;
 using Xunit;
 
 namespace KrakenCore.Tests.Utils
 {
     public class RateLimiterTests
     {
-        const int CallLimit = 2;
-        static readonly TimeSpan CallCounterDecreaseTime = TimeSpan.FromTicks(1);
+        private const int CallLimit = 2;
+        private static readonly TimeSpan CallCounterDecreaseTime = TimeSpan.FromTicks(1);
 
-        readonly ManualStopwatch _stopwatch;
-        readonly RateLimiter _rateLimiter;
+        private readonly ManualStopwatch _stopwatch;
+        private readonly RateLimiter _rateLimiter;
 
         public RateLimiterTests()
         {
@@ -52,7 +52,7 @@ namespace KrakenCore.Tests.Utils
         }
     }
 
-    class ManualStopwatch : IStopwatch
+    internal class ManualStopwatch : IStopwatch
     {
         public TimeSpan Elapsed { get; set; }
 

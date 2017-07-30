@@ -116,5 +116,4 @@ namespace KrakenCore.Models
         /// </summary>
         public string[] Trades { get; set; }
     }
-
 }

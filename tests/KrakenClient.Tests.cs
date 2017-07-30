@@ -7,7 +7,7 @@ namespace KrakenCore.Tests
 {
     public partial class KrakenClientTests : IDisposable
     {
-        readonly KrakenClient _client;
+        private readonly KrakenClient _client;
 
         public KrakenClientTests()
         {
@@ -26,8 +26,7 @@ namespace KrakenCore.Tests
 
         public void Dispose() => _client.Dispose();
 
-
         [DebuggerHidden]
-        void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
+        private void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
     }
 }

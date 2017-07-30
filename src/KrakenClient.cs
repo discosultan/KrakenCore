@@ -17,14 +17,14 @@ namespace KrakenCore
     /// </summary>
     public partial class KrakenClient : IDisposable
     {
-        static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
+        private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
 
-        static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             ContractResolver = new SnakeCasePropertyNamesContractResolved()
         };
 
-        static readonly Dictionary<AccountTier, (int Limit, TimeSpan DecreaseTime)> TierInfo
+        private static readonly Dictionary<AccountTier, (int Limit, TimeSpan DecreaseTime)> TierInfo
             = new Dictionary<AccountTier, (int, TimeSpan)>(3)
             {
                 [AccountTier.Tier2] = (15, TimeSpan.FromSeconds(3)),
@@ -32,16 +32,16 @@ namespace KrakenCore
                 [AccountTier.Tier4] = (20, TimeSpan.FromSeconds(1))
             };
 
-        const int AdditionalPrivateQueryArgs = 2;
+        private const int AdditionalPrivateQueryArgs = 2;
 
-        readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient = new HttpClient();
 
-        readonly HMACSHA512 _sha512PrivateKey;
-        readonly SHA256 _sha256 = SHA256.Create();
+        private readonly HMACSHA512 _sha512PrivateKey;
+        private readonly SHA256 _sha256 = SHA256.Create();
 
-        readonly RateLimiter _rateLimiter; // Nullable.
+        private readonly RateLimiter _rateLimiter; // Nullable.
 
-        readonly Func<long> _getNonce;
+        private readonly Func<long> _getNonce;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KrakenClient"/> class.
@@ -147,7 +147,7 @@ namespace KrakenCore
             byte[] dataBytes = _sha256.ComputeHash(Encoding.UTF8.GetBytes(nonce + urlEncodedArgs));
 
             var buffer = new byte[urlBytes.Length + dataBytes.Length];
-            Buffer.BlockCopy(urlBytes,  0, buffer, 0,               urlBytes.Length);
+            Buffer.BlockCopy(urlBytes, 0, buffer, 0, urlBytes.Length);
             Buffer.BlockCopy(dataBytes, 0, buffer, urlBytes.Length, dataBytes.Length);
             byte[] signature = _sha512PrivateKey.ComputeHash(buffer);
 

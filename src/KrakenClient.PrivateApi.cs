@@ -136,8 +136,8 @@ namespace KrakenCore
         /// <param name="includeTrades">
         /// Whether or not to include trades related to position in output (optional. default = false).
         /// </param>
-        /// <param name="start">Starting unix timestamp or trade tx id of results (optional.  exclusive).</param>
-        /// <param name="end">Ending unix timestamp or trade tx id of results (optional.  inclusive).</param>
+        /// <param name="start">Starting unix timestamp or trade tx id of results (optional. exclusive).</param>
+        /// <param name="end">Ending unix timestamp or trade tx id of results (optional. inclusive).</param>
         /// <param name="offset">Result offset.</param>
         /// <returns>Dictionary of trade info.</returns>
         public Task<KrakenResponse<object>> GetTradesHistory(
@@ -277,6 +277,7 @@ namespace KrakenCore
         }
 
         /// <summary>
+        /// Note:
         /// <para>
         /// See <a href="https://www.kraken.com/help/api#get-tradable-pairs">Get tradable asset
         /// pairs</a> for specifications on asset pair prices, lots, and leverage.
@@ -317,26 +318,43 @@ namespace KrakenCore
         /// <para>stop-loss-and-limit (price = stop loss price, price2 = limit price)</para>
         /// <para>settle-position</para>
         /// </param>
-        /// <param name="price"></param>
-        /// <param name="price2"></param>
-        /// <param name="volume"></param>
-        /// <param name="leverage"></param>
-        /// <param name="orderFlags"></param>
-        /// <param name="startTime"></param>
-        /// <param name="expireTime"></param>
-        /// <param name="userReference"></param>
-        /// <param name="validate"></param>
+        /// <param name="price">Price (optional. dependent upon <paramref name="orderType"/>).</param>
+        /// <param name="price2">Secondary price (optional. dependent upon <paramref name="orderType"/>).</param>
+        /// <param name="volume">Order volume in lots.</param>
+        /// <param name="leverage">Amount of leverage desired (optional. default = none).</param>
+        /// <param name="orderFlags">
+        /// Comma delimited list of order flags (optional):
+        /// <para>viqc = volume in quote currency (not available for leveraged orders)</para>
+        /// <para>fcib = prefer fee in base currency</para>
+        /// <para>fciq = prefer fee in quote currency</para>
+        /// <para>nompp = no market price protection</para>
+        /// <para>post = post only order (available when <paramref name="orderType"/> = limit)</para>
+        /// </param>
+        /// <param name="startTime">
+        /// Scheduled start time (optional):
+        /// <para>0 = now (default)</para>
+        /// <para>+{n} = schedule start time {n} seconds from now</para>
+        /// <para>{n} = unix timestamp of start time</para>
+        /// </param>
+        /// <param name="expireTime">
+        /// Expiration time (optional):
+        /// <para>0 = no expiration (default)</para>
+        /// <para>+{n} = expire {n} seconds from now</para>
+        /// <para>{n} = unix timestamp of expiration time</para>
+        /// </param>
+        /// <param name="userReference">User reference id. 32-bit signed number. (optional).</param>
+        /// <param name="validate">Validate inputs only. Do not submit order (optional).</param>
         public Task<KrakenResponse<AddOrderResult>> AddStandardOrder(
             string pair,
             string type,
             string orderType,
-            decimal price,
-            decimal price2,
-            decimal volume,
-            string leverage,
-            string orderFlags,
-            string startTime,
-            string expireTime,
+            decimal? price = null,
+            decimal? price2 = null,
+            decimal? volume = null, // TODO: validate if optional
+            string leverage = null,
+            string orderFlags = null,
+            string startTime = null,
+            string expireTime = null,
             string userReference = null,
             bool? validate = null)
         {
@@ -347,9 +365,9 @@ namespace KrakenCore
                     ["pair"] = pair,
                     ["type"] = type,
                     ["ordertype"] = orderType,
-                    ["price"] = price.ToString(),
-                    ["price2"] = price2.ToString(),
-                    ["volume"] = volume.ToString(),
+                    ["price"] = price?.ToString(),
+                    ["price2"] = price2?.ToString(),
+                    ["volume"] = volume?.ToString(),
                     ["leverage"] = leverage,
                     ["oflags"] = orderFlags,
                     ["starttm"] = startTime,
