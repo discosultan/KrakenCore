@@ -2,7 +2,7 @@
 
 namespace KrakenCore.Models
 {
-    public class SpreadData
+    public class SpreadsData
     {
         public Dictionary<string, Spread[]> Spreads { get; set; }
 

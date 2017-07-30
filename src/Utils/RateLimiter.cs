@@ -34,7 +34,7 @@ namespace KrakenCore.Utils
                 elapsed -= _counterDecreaseTime;
             }
 
-            if (_callCounter >= _counterLimit)
+            if (_callCounter > _counterLimit - counterIncrease)
             {
                 var toWait = TimeSpan.FromSeconds(
                     (_callCounter - _counterLimit) * _counterDecreaseTime.TotalSeconds

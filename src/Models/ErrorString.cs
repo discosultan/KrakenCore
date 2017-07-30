@@ -10,7 +10,11 @@ namespace KrakenCore.Models
         public const char SeverityCodeError = 'E';
         public const char SeverityCodeWarning = 'W';
 
+        public const string ErrorCategoryGeneral = "General";
+        public const string ErrorCategoryOrder = "Order";
         public const string ErrorCategoryQuery = "Query";
+        public const string ErrorCategoryService = "Service";
+        public const string ErrorCategoryTrade = "Trade";
 
         public ErrorString(string error)
         {

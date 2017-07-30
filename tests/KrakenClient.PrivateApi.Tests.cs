@@ -12,5 +12,11 @@ namespace KrakenCore.Tests
 
             Assert.Empty(res.Errors);
         }
+
+        [Fact]
+        public async Task Niha()
+        {
+
+        }
     }
 }

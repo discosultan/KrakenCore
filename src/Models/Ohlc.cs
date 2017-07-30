@@ -2,7 +2,7 @@
 
 namespace KrakenCore.Models
 {
-    public class OhlcData
+    public class OhlcsData
     {
         public Dictionary<string, Ohlc> Ohcls { get; set; }
 

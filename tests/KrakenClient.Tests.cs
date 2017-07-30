@@ -16,10 +16,12 @@ namespace KrakenCore.Tests
 
             string apiKey = config["ApiKey"];
 
+            string privateKey = config["PrivateKey"];
+
             if (!Enum.TryParse(config["AccountTier"], out AccountTier accountTier))
                 accountTier = AccountTier.Unknown;
 
-            _client = new KrakenClient(apiKey, accountTier);
+            _client = new KrakenClient(apiKey, privateKey, accountTier);
         }
 
         public void Dispose() => _client.Dispose();

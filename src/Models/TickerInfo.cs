@@ -2,7 +2,7 @@
 
 namespace KrakenCore.Models
 {
-    public class TickerInformation
+    public class TickerInfo
     {
         /// <summary>
         /// Ask array(<price>, <whole lot volume>, <lot volume>).

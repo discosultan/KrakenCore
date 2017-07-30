@@ -7,8 +7,8 @@ namespace KrakenCore.Tests.Utils
 {
     public class RateLimiterTests
     {
-        const int CallLimit = 1;
-        static readonly TimeSpan CallCounterDecreaseTime = TimeSpan.FromSeconds(1);
+        const int CallLimit = 2;
+        static readonly TimeSpan CallCounterDecreaseTime = TimeSpan.FromTicks(1);
 
         readonly ManualStopwatch _stopwatch;
         readonly RateLimiter _rateLimiter;
@@ -25,26 +25,20 @@ namespace KrakenCore.Tests.Utils
         [Fact]
         public async Task WaitAccess_NotLimited()
         {
-            Assert.False(await _rateLimiter.WaitAccess(1));
+            Assert.False(await _rateLimiter.WaitAccess(CallLimit));
         }
 
         [Fact]
-        public async Task WaitAccess_DoubleRate_Limited()
-        {
-            Assert.True(await _rateLimiter.WaitAccess(2));
-        }
-
-        [Fact]
-        public async Task WaitAccess_NoTimePassed_Limited()
+        public async Task WaitAccess_Limited()
         {
             await _rateLimiter.WaitAccess(1);
-            Assert.True(await _rateLimiter.WaitAccess(1));
+            Assert.True(await _rateLimiter.WaitAccess(CallLimit));
         }
 
         [Fact]
         public async Task WaitAccess_EnoughTimePassed_NotLimited()
         {
-            await _rateLimiter.WaitAccess(1);
+            await _rateLimiter.WaitAccess(CallLimit);
             _stopwatch.Elapsed = CallCounterDecreaseTime;
             Assert.False(await _rateLimiter.WaitAccess(1));
         }
@@ -52,9 +46,9 @@ namespace KrakenCore.Tests.Utils
         [Fact]
         public async Task WaitAccess_DoubleRateHalfTimePassed_Limited()
         {
-            await _rateLimiter.WaitAccess(2);
+            await _rateLimiter.WaitAccess(CallLimit);
             _stopwatch.Elapsed = CallCounterDecreaseTime;
-            Assert.True(await _rateLimiter.WaitAccess(1));
+            Assert.True(await _rateLimiter.WaitAccess(2));
         }
     }
 
