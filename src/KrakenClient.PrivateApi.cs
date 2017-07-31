@@ -73,7 +73,7 @@ namespace KrakenCore
         /// <para>both (default)</para>
         /// </param>
         /// <returns>Array of order info.</returns>
-        public Task<KrakenResponse<Dictionary<string, OrderInfo>>> GetClosedOrders(
+        public Task<KrakenResponse<ClosedOrdersInfo>> GetClosedOrders(
             bool? includeTrades = null,
             string userReference = null,
             long? start = null,
@@ -81,7 +81,7 @@ namespace KrakenCore
             int? offset = null,
             string closeTime = null)
         {
-            return QueryPrivate<Dictionary<string, OrderInfo>>(
+            return QueryPrivate<ClosedOrdersInfo>(
                 "/0/private/ClosedOrders",
                 new Dictionary<string, string>(6 + AdditionalPrivateQueryArgs)
                 {
@@ -103,9 +103,9 @@ namespace KrakenCore
         /// </param>
         /// <returns>Dictionary of orders info.</returns>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> QueryOrdersInfo(
+            string transactionIds,
             bool? includeTrades = null,
-            string userReference = null,
-            string transactionIds = null)
+            string userReference = null)
         {
             return QueryPrivate<Dictionary<string, OrderInfo>>(
                 "/0/private/QueryOrders",
@@ -167,7 +167,7 @@ namespace KrakenCore
         /// </param>
         /// <returns>Dictionary of trades info.</returns>
         public Task<KrakenResponse<Dictionary<string, TradeInfo>>> QueryTradesInfo(
-            string transactionIds = null,
+            string transactionIds,
             bool? includeTrades = null)
         {
             return QueryPrivate<Dictionary<string, TradeInfo>>(
@@ -191,7 +191,7 @@ namespace KrakenCore
         /// </param>
         /// <returns>Dictionary of open position info.</returns>
         public Task<KrakenResponse<Dictionary<string, PositionInfo>>> GetOpenPositions(
-            string transactionIds = null,
+            string transactionIds,
             bool? doCalculations = null)
         {
             return QueryPrivate<Dictionary<string, PositionInfo>>(
@@ -225,7 +225,7 @@ namespace KrakenCore
         /// <param name="end">Ending unix timestamp or ledger id of results (optional. inclusive).</param>
         /// <param name="offset">Result offset.</param>
         /// <returns>Dictionary of ledgers info.</returns>
-        public Task<KrakenResponse<Dictionary<string, LedgerInfo>>> GetLedgersInfo(
+        public Task<KrakenResponse<LedgersInfo>> GetLedgersInfo(
             string assetClass = null,
             string assets = null,
             string type = null,
@@ -233,7 +233,7 @@ namespace KrakenCore
             string end = null,
             string offset = null)
         {
-            return QueryPrivate<Dictionary<string, LedgerInfo>>(
+            return QueryPrivate<LedgersInfo>(
                 "/0/private/Ledgers",
                 new Dictionary<string, string>(6 + AdditionalPrivateQueryArgs)
                 {

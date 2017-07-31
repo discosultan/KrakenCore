@@ -2,7 +2,7 @@
 
 namespace KrakenCore.Models
 {
-    public class TradesData
+    public class RecentTrades
     {
         public Dictionary<string, Trade[]> Trades { get; set; }
 

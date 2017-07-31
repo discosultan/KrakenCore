@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
+    public class ClosedOrdersInfo
+    {
+        public Dictionary<string, OrderInfo> Closed { get; set; }
+
+        public int Count { get; set; }
+    }
+
     public class OrderInfo
     {
         /// <summary>

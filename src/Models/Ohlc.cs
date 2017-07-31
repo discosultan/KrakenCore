@@ -2,7 +2,7 @@
 
 namespace KrakenCore.Models
 {
-    public class OhlcsData
+    public class OhlcData
     {
         public Dictionary<string, Ohlc> Ohcls { get; set; }
 
@@ -14,7 +14,10 @@ namespace KrakenCore.Models
 
     public class Ohlc
     {
-        public int Time { get; set; }
+        /// <summary>
+        /// Unix timestamp.
+        /// </summary>
+        public long Time { get; set; }
 
         public decimal Open { get; set; }
 
@@ -24,6 +27,9 @@ namespace KrakenCore.Models
 
         public decimal Close { get; set; }
 
+        /// <summary>
+        /// Volume-weighted average price.
+        /// </summary>
         public decimal Vwap { get; set; }
 
         public decimal Volume { get; set; }

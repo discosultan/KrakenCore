@@ -85,7 +85,7 @@ namespace KrakenCore
 
         /// <summary>
         /// Note: the last entry in the OHLC array is for the current, not-yet-committed frame and
-        ///       will always be present, regardless of the value of "since".
+        ///       will always be present, regardless of the value of <paramref name="since"/>.
         /// </summary>
         /// <param name="pair">Asset pair to get OHLC data for.</param>
         /// <param name="interval">
@@ -94,9 +94,9 @@ namespace KrakenCore
         /// </param>
         /// <param name="since">Return committed OHLC data since given id (optional. exclusive).</param>
         /// <returns>Dictionary of pair name and OHLC data</returns>
-        public Task<KrakenResponse<OhlcsData>> GetOhlcData(string pair, int? interval = null, long? since = null)
+        public Task<KrakenResponse<OhlcData>> GetOhlcData(string pair, int? interval = null, long? since = null)
         {
-            return QueryPublic<OhlcsData>(
+            return QueryPublic<OhlcData>(
                 "/0/public/OHLC",
                 new Dictionary<string, string>(3)
                 {
@@ -125,9 +125,9 @@ namespace KrakenCore
         /// <param name="pair">Asset pair to get trade data for.</param>
         /// <param name="since">Return trade data since given id (optional. exclusive).</param>
         /// <returns>Dictionary of pair name and recent trade data.</returns>
-        public Task<KrakenResponse<TradesData>> GetRecentTrades(string pair, long? since = null)
+        public Task<KrakenResponse<RecentTrades>> GetRecentTrades(string pair, long? since = null)
         {
-            return QueryPublic<TradesData>(
+            return QueryPublic<RecentTrades>(
                 "/0/public/Trades",
                 new Dictionary<string, string>(2)
                 {
@@ -144,9 +144,9 @@ namespace KrakenCore
         /// <param name="pair">Asset pair to get spread data for.</param>
         /// <param name="since">Return spread data since given id (optional. inclusive).</param>
         /// <returns>Dictionary of pair name and recent spread data.</returns>
-        public Task<KrakenResponse<SpreadsData>> GetRecentSpreadData(string pair, long? since = null)
+        public Task<KrakenResponse<RecentSpreads>> GetRecentSpreadData(string pair, long? since = null)
         {
-            return QueryPublic<SpreadsData>(
+            return QueryPublic<RecentSpreads>(
                 "/0/public/Spread",
                 new Dictionary<string, string>(2)
                 {

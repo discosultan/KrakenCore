@@ -1,7 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
+    public class LedgersInfo
+    {
+        public int Count { get; set; }
+
+        public Dictionary<string, LedgerInfo> Ledgers { get; set; }
+    }
+
     public class LedgerInfo
     {
         /// <summary>

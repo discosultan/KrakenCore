@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
-    public class TradesInfoData
+    public class TradesInfo
     {
         public Dictionary<string, TradeInfo> Trades { get; set; }
 

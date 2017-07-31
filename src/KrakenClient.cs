@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace KrakenCore
 {
     /// <summary>
-    /// A strongly typed async http client for Kraken Bitcoin Exchange API.
+    /// A strongly typed async http client for Kraken bitcoin exchange API.
     /// <para>https://www.kraken.com/help/api</para>
     /// </summary>
     public partial class KrakenClient : IDisposable
@@ -24,12 +24,12 @@ namespace KrakenCore
             ContractResolver = new SnakeCasePropertyNamesContractResolved()
         };
 
-        private static readonly Dictionary<AccountTier, (int Limit, TimeSpan DecreaseTime)> TierInfo
-            = new Dictionary<AccountTier, (int, TimeSpan)>(3)
+        private static readonly Dictionary<RateLimit, (int Limit, TimeSpan DecreaseTime)> TierInfo
+            = new Dictionary<RateLimit, (int, TimeSpan)>(4)
             {
-                [AccountTier.Tier2] = (15, TimeSpan.FromSeconds(3)),
-                [AccountTier.Tier3] = (20, TimeSpan.FromSeconds(2)),
-                [AccountTier.Tier4] = (20, TimeSpan.FromSeconds(1))
+                [RateLimit.Tier2] = (15, TimeSpan.FromSeconds(3)),
+                [RateLimit.Tier3] = (20, TimeSpan.FromSeconds(2)),
+                [RateLimit.Tier4] = (20, TimeSpan.FromSeconds(1))
             };
 
         private const int AdditionalPrivateQueryArgs = 2;
@@ -39,17 +39,18 @@ namespace KrakenCore
         private readonly HMACSHA512 _sha512PrivateKey;
         private readonly SHA256 _sha256 = SHA256.Create();
 
-        private readonly RateLimiter _rateLimiter; // Nullable.
+        private readonly RateLimiter _publicApiRateLimiter;  // Nullable.
+        private readonly RateLimiter _privateApiRateLimiter; // Nullable.
 
         private readonly Func<long> _getNonce;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KrakenClient"/> class.
         /// </summary>
-        /// <param name="apiKey">Key required to make queries to the API.</param>
-        /// <param name="accountTier">
-        /// Account tier at Kraken Exchange. This is used to enable API call rate limiter. To
-        /// disable, use <see cref="AccountTier.Unknown"/>.
+        /// <param name="apiKey">Key required to make private queries to the API.</param>
+        /// <param name="privateKey">Secret required to sign private messages.</param>
+        /// <param name="rateLimit">
+        /// Used to enable API call rate limiter conforming to Kraken rules. To disable, use <see cref="KrakenCore.RateLimit.None"/>.
         /// </param>
         /// <param name="apiBaseUrl">Base address of the API.</param>
         /// <param name="getNonce">
@@ -60,16 +61,20 @@ namespace KrakenCore
         public KrakenClient(
             string apiKey,
             string privateKey,
-            AccountTier accountTier = AccountTier.Unknown,
+            RateLimit rateLimit = RateLimit.None,
             string apiBaseUrl = "https://api.kraken.com",
             Func<long> getNonce = null)
         {
             ApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
             PrivateKey = privateKey ?? throw new ArgumentNullException(nameof(privateKey));
 
-            AccountTier = accountTier;
-            if (TierInfo.TryGetValue(accountTier, out var info))
-                _rateLimiter = new RateLimiter(info.Limit, info.DecreaseTime, new Stopwatch());
+            RateLimit = rateLimit;
+            if (TierInfo.TryGetValue(rateLimit, out var info))
+            {
+                _privateApiRateLimiter = new RateLimiter(info.Limit, info.DecreaseTime, new Stopwatch());
+                // If private rate limiter enabled, also enable public rate limiter.
+                _publicApiRateLimiter = new RateLimiter(20, TimeSpan.FromSeconds(1), new Stopwatch());
+            }
 
             if (apiBaseUrl == null) throw new ArgumentNullException(nameof(apiBaseUrl));
             _httpClient.BaseAddress = new Uri(apiBaseUrl);
@@ -83,7 +88,7 @@ namespace KrakenCore
 
         public string PrivateKey { get; }
 
-        public AccountTier AccountTier { get; }
+        public RateLimit RateLimit { get; }
 
         /// <summary>
         /// Sends a public POST request to the Kraken API as an asynchronous operation.
@@ -91,6 +96,7 @@ namespace KrakenCore
         /// <typeparam name="T">Type of data contained in the response.</typeparam>
         /// <param name="requestUrl">The relative url the request is sent to.</param>
         /// <param name="args">Optional argument passed as form data.</param>
+        /// <param name="apiCallCost">Cost of the query. Used to limit API calling rate.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="requestUrl"/> is <c>null</c>.</exception>
         public async Task<KrakenResponse<T>> QueryPublic<T>(
@@ -110,7 +116,7 @@ namespace KrakenCore
             };
 
             // Send request and deserialize response.
-            return await SendRequest<T>(req, 1).ConfigureAwait(false);
+            return await SendRequest<T>(req, _publicApiRateLimiter, 1).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,9 +125,13 @@ namespace KrakenCore
         /// <typeparam name="T">Type of data contained in the response.</typeparam>
         /// <param name="requestUrl">The relative url the request is sent to.</param>
         /// <param name="args">Optional arguments passed as form data.</param>
+        /// <param name="apiCallCost">Cost of the query. Used to limit API calling rate.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="requestUrl"/> is <c>null</c>.</exception>
-        public async Task<KrakenResponse<T>> QueryPrivate<T>(string requestUrl, Dictionary<string, string> args = null)
+        public async Task<KrakenResponse<T>> QueryPrivate<T>(
+            string requestUrl,
+            Dictionary<string, string> args = null,
+            int apiCallCost = 1)
         {
             if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
 
@@ -154,7 +164,7 @@ namespace KrakenCore
             req.Headers.Add("API-Sign", Convert.ToBase64String(signature));
 
             // Send request and deserialize response.
-            return await SendRequest<T>(req, 1).ConfigureAwait(false);
+            return await SendRequest<T>(req, _privateApiRateLimiter, 1).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,15 +173,10 @@ namespace KrakenCore
         /// </summary>
         public void Dispose() => _httpClient.Dispose();
 
-        private string UrlEncode(Dictionary<string, string> args) => string.Join(
-            "&",
-            args.Where(x => x.Value != null).Select(x => x.Key + "=" + x.Value)
-        );
-
-        private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, int cost)
+        private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, RateLimiter rateLimiter, int cost)
         {
-            if (_rateLimiter != null && cost > 0)
-                await _rateLimiter.WaitAccess(cost).ConfigureAwait(false);
+            if (rateLimiter != null && cost > 0)
+                await rateLimiter.WaitAccess(cost).ConfigureAwait(false);
 
             HttpResponseMessage res = await _httpClient.SendAsync(req).ConfigureAwait(false);
             if (!res.IsSuccessStatusCode)
@@ -180,5 +185,10 @@ namespace KrakenCore
             string jsonContent = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonConvert.DeserializeObject<KrakenResponse<T>>(jsonContent, JsonSettings);
         }
+
+        private static string UrlEncode(Dictionary<string, string> args) => string.Join(
+            "&",
+            args.Where(x => x.Value != null).Select(x => x.Key + "=" + x.Value)
+        );
     }
 }
