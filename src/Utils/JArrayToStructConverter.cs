@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace KrakenCore.Utils
 {
-    internal class JsonArrayToStructConverter : JsonConverter
+    internal class JArrayToStructConverter : JsonConverter
     {
         public override bool CanWrite => false;
 
@@ -14,16 +14,16 @@ namespace KrakenCore.Utils
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var result = Activator.CreateInstance(objectType);
+            existingValue = existingValue ?? Activator.CreateInstance(objectType);
             var array = JArray.Load(reader);
             FieldInfo[] fields = objectType.GetRuntimeFields().ToArray();
             for (int i = 0; i < fields.Length; i++)
             {
                 FieldInfo field = fields[i];
                 JToken token = array[i];
-                field.SetValue(result, token.ToObject(field.FieldType));
+                field.SetValue(existingValue, token.ToObject(field.FieldType));
             }
-            return result;
+            return existingValue;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

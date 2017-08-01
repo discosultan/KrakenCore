@@ -1,13 +1,43 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace KrakenCore.Models
 {
     public class LedgersInfo
     {
-        public int Count { get; set; }
+        [JsonIgnore]
+        private bool _isDirty = true;
 
-        public Dictionary<string, LedgerInfo> Ledgers { get; set; }
+        [JsonIgnore]
+        private Dictionary<string, LedgerInfo> _ledgers;
+
+        [JsonExtensionData]
+        private IDictionary<string, JToken> _extenion;
+
+        public long Count { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<string, LedgerInfo> Ledgers
+        {
+            get
+            {
+                if (_isDirty)
+                {
+                    _ledgers = _extenion.ToDictionary(
+                        x => x.Key,
+                        x => x.Value.ToObject<LedgerInfo>());
+                    _isDirty = false;
+                }
+                return _ledgers;
+            }
+            set
+            {
+                _ledgers = value;
+                _isDirty = false;
+            }
+        }
     }
 
     public class LedgerInfo

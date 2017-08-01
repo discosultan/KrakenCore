@@ -67,6 +67,8 @@ namespace KrakenCore.Tests
         {
             var res = await _client.GetLedgersInfo();
             Assert.Empty(res.Errors);
+            AssertNotDefault(res.Result.Count);
+            AssertNotDefault(res.Result.Ledgers);
         }
 
         [Fact]

@@ -16,7 +16,7 @@ namespace KrakenCore.Models
         public OrderBookEntry[] Bids { get; set; }
     }
 
-    [JsonConverter(typeof(JsonArrayToStructConverter))]
+    [JsonConverter(typeof(JArrayToStructConverter))]
     public class OrderBookEntry
     {
         public decimal Price { get; set; }

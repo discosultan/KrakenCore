@@ -89,7 +89,7 @@ namespace KrakenCore.Models
         public decimal MarginStop { get; set; }
     }
 
-    [JsonConverter(typeof(JsonArrayToStructConverter))]
+    [JsonConverter(typeof(JArrayToStructConverter))]
     public struct Fee
     {
         public decimal Volume;

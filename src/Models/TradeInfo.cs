@@ -7,7 +7,7 @@ namespace KrakenCore.Models
     {
         public Dictionary<string, TradeInfo> Trades { get; set; }
 
-        public int Count { get; set; }
+        public long Count { get; set; }
     }
 
     public class TradeInfo

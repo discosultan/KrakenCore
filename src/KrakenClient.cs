@@ -1,6 +1,7 @@
 ﻿using KrakenCore.Models;
 using KrakenCore.Utils;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +18,15 @@ namespace KrakenCore
     /// </summary>
     public partial class KrakenClient : IDisposable
     {
-        private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
-
-        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
-            ContractResolver = new SnakeCasePropertyNamesContractResolved()
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
         };
 
+        private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
+
         private static readonly Dictionary<RateLimit, (int Limit, TimeSpan DecreaseTime)> TierInfo
-            = new Dictionary<RateLimit, (int, TimeSpan)>(4)
+            = new Dictionary<RateLimit, (int, TimeSpan)>(3)
             {
                 [RateLimit.Tier2] = (15, TimeSpan.FromSeconds(3)),
                 [RateLimit.Tier3] = (20, TimeSpan.FromSeconds(2)),
@@ -135,7 +136,7 @@ namespace KrakenCore
         {
             if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
 
-            args = args ?? new Dictionary<string, string>(2);
+            args = args ?? new Dictionary<string, string>(AdditionalPrivateQueryArgs);
 
             // Add additional args.
             string nonce = _getNonce().ToString();
