@@ -91,6 +91,8 @@ namespace KrakenCore
 
         public RateLimit RateLimit { get; }
 
+        public bool WarningsAsExceptions { get; set; } = true;
+
         /// <summary>
         /// Sends a public POST request to the Kraken API as an asynchronous operation.
         /// </summary>
@@ -176,15 +178,34 @@ namespace KrakenCore
 
         private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, RateLimiter rateLimiter, int cost)
         {
+            // Wait before sending the request if rate limiter is enabled and counter is full.
             if (rateLimiter != null && cost > 0)
+            {
                 await rateLimiter.WaitAccess(cost).ConfigureAwait(false);
+            }
 
+            // Perform the HTTP request.
             HttpResponseMessage res = await _httpClient.SendAsync(req).ConfigureAwait(false);
-            if (!res.IsSuccessStatusCode)
-                throw new Exception($"Http request failed.\n\n{req}\n\n{res}");
 
+            // Throw for HTTP-level error.
+            if (!res.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"{req}\n\n{res}");
+            }
+
+            // Deserialize response.
             string jsonContent = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<KrakenResponse<T>>(jsonContent, JsonSettings);
+            var result = JsonConvert.DeserializeObject<KrakenResponse<T>>(jsonContent, JsonSettings);
+
+            // Throw for API-level error and warning if configured.
+            if (result.Errors.Any(x =>
+                x.SeverityCode == ErrorString.SeverityCodeError ||
+                WarningsAsExceptions && x.SeverityCode == ErrorString.SeverityCodeWarning))
+            {
+                throw new KrakenException(result.Errors, "There was a problem with the response from Kraken.");
+            }
+            
+            return result;
         }
 
         private static string UrlEncode(Dictionary<string, string> args) => string.Join(

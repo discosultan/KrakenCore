@@ -94,13 +94,13 @@ namespace KrakenCore
                 });
         }
 
+        /// <param name="transactionIds">
+        /// Comma delimited list of transaction ids to query info about (20 maximum).
+        /// </param>
         /// <param name="includeTrades">
         /// Whether or not to include trades in output (optional. default = false).
         /// </param>
         /// <param name="userReference">Restrict results to given user reference id (optional).</param>
-        /// <param name="transactionIds">
-        /// Comma delimited list of transaction ids to query info about (20 maximum).
-        /// </param>
         /// <returns>Dictionary of orders info.</returns>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> QueryOrdersInfo(
             string transactionIds,

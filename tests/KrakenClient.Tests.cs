@@ -21,7 +21,10 @@ namespace KrakenCore.Tests
             if (!Enum.TryParse(config["AccountTier"], out RateLimit rateLimit))
                 rateLimit = RateLimit.None;
 
-            _client = new KrakenClient(apiKey, privateKey, rateLimit);
+            _client = new KrakenClient(apiKey, privateKey, rateLimit)
+            {
+                WarningsAsExceptions = true
+            };
         }
 
         public void Dispose() => _client.Dispose();

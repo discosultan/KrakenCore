@@ -8,11 +8,11 @@ namespace KrakenCore.Utils
 {
     internal class JObjectToWrappedDictionaryConverter : JsonConverter
     {
-        private readonly string _dictName;
+        //private readonly string _dictName;
 
-        public JObjectToWrappedDictionaryConverter(string dictName)
+        public JObjectToWrappedDictionaryConverter()
         {
-            _dictName = dictName;
+            //_dictName = dictName;
         }
 
         public override bool CanWrite => false;
@@ -25,11 +25,11 @@ namespace KrakenCore.Utils
             var jObj = JObject.Load(reader);
 
             var props = objectType.GetRuntimeProperties().ToArray();
-            var dictProp = props.First(x => x.Name == _dictName);
+            //var dictProp = props.First(x => x.Name == _dictName);
 
-            Type dictValueType = dictProp.PropertyType.GenericTypeArguments[1];
+            //Type dictValueType = dictProp.PropertyType.GenericTypeArguments[1];
 
-            var jContract = serializer.ContractResolver.ResolveContract(objectType);
+            //var jContract = serializer.ContractResolver.ResolveContract(objectType);
             //jContract.Converter.
 
             //foreach (var jProp in jObj)
