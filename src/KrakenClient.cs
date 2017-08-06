@@ -211,10 +211,7 @@ namespace KrakenCore
             }
 
             // Throw for HTTP-level error.
-            if (!res.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"{req}\n\n{res}");
-            }
+            res.EnsureSuccessStatusCode();
 
             // Deserialize response.
             string jsonContent = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
