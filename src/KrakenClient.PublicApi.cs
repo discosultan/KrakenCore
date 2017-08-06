@@ -1,5 +1,6 @@
 ﻿using KrakenCore.Models;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace KrakenCore
@@ -9,6 +10,8 @@ namespace KrakenCore
         /// <summary>
         /// Note: this is to aid in approximating the skew time between the server and client.
         /// </summary>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<ServerTime>> GetServerTime()
         {
             return QueryPublic<ServerTime>("/0/public/Time");
@@ -26,6 +29,8 @@ namespace KrakenCore
         /// Comma delimited list of assets to get info on. (optional. default = all for given asset class).
         /// </param>
         /// <returns>Dictionary of asset names and their info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, AssetInfo>>> GetAssetInfo(
             string info = null,
             string assetClass = null,
@@ -53,6 +58,8 @@ namespace KrakenCore
         /// Comma delimited list of asset pairs to get info on (optional. default = all).
         /// </param>
         /// <returns>Dictionary of pair names and their info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, AssetPair>>> GetTradableAssetPairs(
             string info = null,
             string pairs = null)
@@ -72,6 +79,8 @@ namespace KrakenCore
         /// </summary>
         /// <param name="pairs">Comma delimited list of asset pairs to get info on.</param>
         /// <returns>Dictionary of pair names and their ticker info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, TickerInfo>>> GetTickerInformation(string pairs)
         {
             return QueryPublic<Dictionary<string, TickerInfo>>(
@@ -94,6 +103,8 @@ namespace KrakenCore
         /// </param>
         /// <param name="since">Return committed OHLC data since given id (optional. exclusive).</param>
         /// <returns>Dictionary of pair name and OHLC data</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<OhlcData>> GetOhlcData(string pair, int? interval = null, long? since = null)
         {
             return QueryPublic<OhlcData>(
@@ -110,6 +121,8 @@ namespace KrakenCore
         /// <param name="pair">Asset pair to get market depth for.</param>
         /// <param name="count">Maximum number of asks/bids (optional).</param>
         /// <returns>Dictionary of pair name and market depth.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, OrderBook>>> GetOrderBook(string pair, int? count = null)
         {
             return QueryPublic<Dictionary<string, OrderBook>>(
@@ -125,6 +138,8 @@ namespace KrakenCore
         /// <param name="pair">Asset pair to get trade data for.</param>
         /// <param name="since">Return trade data since given id (optional. exclusive).</param>
         /// <returns>Dictionary of pair name and recent trade data.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<RecentTrades>> GetRecentTrades(string pair, long? since = null)
         {
             return QueryPublic<RecentTrades>(
@@ -144,6 +159,8 @@ namespace KrakenCore
         /// <param name="pair">Asset pair to get spread data for.</param>
         /// <param name="since">Return spread data since given id (optional. inclusive).</param>
         /// <returns>Dictionary of pair name and recent spread data.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<RecentSpreads>> GetRecentSpreadData(string pair, long? since = null)
         {
             return QueryPublic<RecentSpreads>(

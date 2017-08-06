@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,8 +44,6 @@ namespace KrakenCore
         private readonly RateLimiter _publicApiRateLimiter;  // Nullable.
         private readonly RateLimiter _privateApiRateLimiter; // Nullable.
 
-        private readonly Func<long> _getNonce;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="KrakenClient"/> class.
         /// </summary>
@@ -53,18 +52,10 @@ namespace KrakenCore
         /// <param name="rateLimit">
         /// Used to enable API call rate limiter conforming to Kraken rules. To disable, use <see cref="KrakenCore.RateLimit.None"/>.
         /// </param>
-        /// <param name="apiBaseUrl">Base address of the API.</param>
-        /// <param name="getNonce">
-        /// Getter function for a nonce.
-        /// <para>API expects an increasing value for each request.</para>
-        /// <para>By default uses <c>DateTime.UtcNow.Ticks</c>.</para>
-        /// </param>
         public KrakenClient(
             string apiKey,
             string privateKey,
-            RateLimit rateLimit = RateLimit.None,
-            string apiBaseUrl = "https://api.kraken.com",
-            Func<long> getNonce = null)
+            RateLimit rateLimit = RateLimit.None)
         {
             ApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
             PrivateKey = privateKey ?? throw new ArgumentNullException(nameof(privateKey));
@@ -77,12 +68,9 @@ namespace KrakenCore
                 _publicApiRateLimiter = new RateLimiter(20, TimeSpan.FromSeconds(1), new Stopwatch());
             }
 
-            if (apiBaseUrl == null) throw new ArgumentNullException(nameof(apiBaseUrl));
-            _httpClient.BaseAddress = new Uri(apiBaseUrl);
+            _httpClient.BaseAddress = new Uri("https://api.kraken.com");
 
             _sha512PrivateKey = new HMACSHA512(Convert.FromBase64String(privateKey));
-
-            _getNonce = getNonce ?? (() => DateTime.UtcNow.Ticks);
         }
 
         public string ApiKey { get; }
@@ -91,11 +79,26 @@ namespace KrakenCore
 
         public RateLimit RateLimit { get; }
 
+        public Uri BaseAddress
+        {
+            get => _httpClient.BaseAddress;
+            set => _httpClient.BaseAddress = value;
+        }
+
+        public HttpRequestHeaders DefaultHeaders => _httpClient.DefaultRequestHeaders;
+
         public bool WarningsAsExceptions { get; set; } = true;
 
-        public Func<HttpRequestMessage, Task> InterceptRequest { get; set; }
+        /// <summary>
+        /// Gets or sets the getter function for a nonce.
+        /// <para>API expects an increasing value for each request.</para>
+        /// <para>By default uses <c>DateTime.UtcNow.Ticks</c>.</para>
+        /// </summary>
+        public Func<long> GetNonce { get; set; } = () => DateTime.UtcNow.Ticks;
 
-        public Func<HttpResponseMessage, Task> InterceptResponse { get; set; }
+        public Func<HttpRequestMessage, Task> InterceptRequest { get; set; } // Nullable
+
+        public Func<HttpResponseMessage, Task> InterceptResponse { get; set; } // Nullable
 
         /// <summary>
         /// Sends a public POST request to the Kraken API as an asynchronous operation.
@@ -106,6 +109,8 @@ namespace KrakenCore
         /// <param name="apiCallCost">Cost of the query. Used to limit API calling rate.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="requestUrl"/> is <c>null</c>.</exception>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public async Task<KrakenResponse<T>> QueryPublic<T>(
             string requestUrl,
             Dictionary<string, string> args = null,
@@ -135,6 +140,8 @@ namespace KrakenCore
         /// <param name="apiCallCost">Cost of the query. Used to limit API calling rate.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="requestUrl"/> is <c>null</c>.</exception>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public async Task<KrakenResponse<T>> QueryPrivate<T>(
             string requestUrl,
             Dictionary<string, string> args = null,
@@ -145,7 +152,7 @@ namespace KrakenCore
             args = args ?? new Dictionary<string, string>(AdditionalPrivateQueryArgs);
 
             // Add additional args.
-            string nonce = _getNonce().ToString();
+            string nonce = (GetNonce?.Invoke() ?? DateTime.UtcNow.Ticks).ToString();
             args["nonce"] = nonce;
             // TODO: Add otp if two-factor enabled.
 
@@ -182,6 +189,7 @@ namespace KrakenCore
 
         private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, RateLimiter rateLimiter, int cost)
         {
+            // Allow interception of request by the consumer of this client.
             if (InterceptRequest != null)
             {
                 await InterceptRequest(req).ConfigureAwait(false);
@@ -196,6 +204,7 @@ namespace KrakenCore
             // Perform the HTTP request.
             HttpResponseMessage res = await _httpClient.SendAsync(req).ConfigureAwait(false);
 
+            // Allow interception of response by the consumer of this client.
             if (InterceptResponse != null)
             {
                 await InterceptResponse(res).ConfigureAwait(false);

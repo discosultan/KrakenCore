@@ -1,5 +1,6 @@
 ﻿using KrakenCore.Models;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace KrakenCore
@@ -7,6 +8,8 @@ namespace KrakenCore
     public partial class KrakenClient
     {
         /// <returns>Dictionary of asset names and balance amount.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, decimal>>> GetAccountBalance()
         {
             return QueryPrivate<Dictionary<string, decimal>>("/0/private/Balance");
@@ -21,6 +24,8 @@ namespace KrakenCore
         /// </param>
         /// <param name="asset">Base asset used to determine balance (default = ZUSD).</param>
         /// <returns>Array of trade balance info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<TradeBalanceInfo>> GetTradeBalance(string assetClass = null, string asset = "ZUSD")
         {
             return QueryPrivate<TradeBalanceInfo>(
@@ -44,6 +49,8 @@ namespace KrakenCore
         /// </param>
         /// <param name="userReference">Restrict results to given user reference id (optional).</param>
         /// <returns>Dictionary of order info in open array with txid as the key.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> GetOpenOrders(bool? includeTrades = null, string userReference = null)
         {
             return QueryPrivate<Dictionary<string, OrderInfo>>(
@@ -73,6 +80,8 @@ namespace KrakenCore
         /// <para>both (default)</para>
         /// </param>
         /// <returns>Array of order info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<ClosedOrdersInfo>> GetClosedOrders(
             bool? includeTrades = null,
             string userReference = null,
@@ -102,6 +111,8 @@ namespace KrakenCore
         /// </param>
         /// <param name="userReference">Restrict results to given user reference id (optional).</param>
         /// <returns>Dictionary of orders info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> QueryOrdersInfo(
             string transactionIds,
             bool? includeTrades = null,
@@ -140,6 +151,8 @@ namespace KrakenCore
         /// <param name="end">Ending unix timestamp or trade tx id of results (optional. inclusive).</param>
         /// <param name="offset">Result offset.</param>
         /// <returns>Dictionary of trade info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<object>> GetTradesHistory(
             string type = null,
             bool? includeTrades = null,
@@ -166,6 +179,8 @@ namespace KrakenCore
         /// Whether or not to include trades related to position in output (optional. default = false).
         /// </param>
         /// <returns>Dictionary of trades info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, TradeInfo>>> QueryTradesInfo(
             string transactionIds,
             bool? includeTrades = null)
@@ -190,6 +205,8 @@ namespace KrakenCore
         /// Whether or not to include profit/loss calculations (optional. default = false).
         /// </param>
         /// <returns>Dictionary of open position info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, PositionInfo>>> GetOpenPositions(
             string transactionIds,
             bool? doCalculations = null)
@@ -225,6 +242,8 @@ namespace KrakenCore
         /// <param name="end">Ending unix timestamp or ledger id of results (optional. inclusive).</param>
         /// <param name="offset">Result offset.</param>
         /// <returns>Dictionary of ledgers info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<LedgersInfo>> GetLedgersInfo(
             string assetClass = null,
             string assets = null,
@@ -248,6 +267,8 @@ namespace KrakenCore
 
         /// <param name="ids">Comma delimited list of ledger ids to query info about (20 maximum).</param>
         /// <returns>Dictionary of ledgers info.</returns>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, LedgerInfo>>> QueryLedgers(string ids)
         {
             return QueryPrivate<Dictionary<string, LedgerInfo>>(
@@ -265,6 +286,8 @@ namespace KrakenCore
         /// </summary>
         /// <param name="pair">Comma delimited list of asset pairs to get fee info on (optional).</param>
         /// <param name="includeFeeInfo">Whether or not to include fee info in results (optional).</param>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<TradeVolume>> GetTradeVolume(string pair = null, bool? includeFeeInfo = null)
         {
             return QueryPrivate<TradeVolume>(
@@ -344,6 +367,8 @@ namespace KrakenCore
         /// </param>
         /// <param name="userReference">User reference id. 32-bit signed number. (optional).</param>
         /// <param name="validate">Validate inputs only. Do not submit order (optional).</param>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<AddOrderResult>> AddStandardOrder(
             string pair,
             string type,
@@ -381,6 +406,8 @@ namespace KrakenCore
         /// Note: <paramref name="transactionId"/> may be a user reference id.
         /// </summary>
         /// <param name="transactionId">Transaction id.</param>
+        /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
+        /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<CancelOrderResult>> CancelOpenOrder(string transactionId)
         {
             return QueryPrivate<CancelOrderResult>(
