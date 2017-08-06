@@ -93,6 +93,10 @@ namespace KrakenCore
 
         public bool WarningsAsExceptions { get; set; } = true;
 
+        public Func<HttpRequestMessage, Task> InterceptRequest { get; set; }
+
+        public Func<HttpResponseMessage, Task> InterceptResponse { get; set; }
+
         /// <summary>
         /// Sends a public POST request to the Kraken API as an asynchronous operation.
         /// </summary>
@@ -178,6 +182,11 @@ namespace KrakenCore
 
         private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, RateLimiter rateLimiter, int cost)
         {
+            if (InterceptRequest != null)
+            {
+                await InterceptRequest(req).ConfigureAwait(false);
+            }
+
             // Wait before sending the request if rate limiter is enabled and counter is full.
             if (rateLimiter != null && cost > 0)
             {
@@ -186,6 +195,11 @@ namespace KrakenCore
 
             // Perform the HTTP request.
             HttpResponseMessage res = await _httpClient.SendAsync(req).ConfigureAwait(false);
+
+            if (InterceptResponse != null)
+            {
+                await InterceptResponse(res).ConfigureAwait(false);
+            }
 
             // Throw for HTTP-level error.
             if (!res.IsSuccessStatusCode)
@@ -202,7 +216,7 @@ namespace KrakenCore
                 x.SeverityCode == ErrorString.SeverityCodeError ||
                 WarningsAsExceptions && x.SeverityCode == ErrorString.SeverityCodeWarning))
             {
-                throw new KrakenException(result.Errors, "There was a problem with the response from Kraken.");
+                throw new KrakenException(result.Errors, "There was a problem with a response from Kraken.");
             }
             
             return result;

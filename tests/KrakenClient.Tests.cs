@@ -1,15 +1,47 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace KrakenCore.Tests
 {
-    public partial class KrakenClientTests : IDisposable
+    public partial class KrakenClientTests : IClassFixture<KrakenFixture>
     {
         private readonly KrakenClient _client;
 
-        public KrakenClientTests()
+        public KrakenClientTests(ITestOutputHelper output, KrakenFixture fixture)
+        {
+            _client = fixture.Client;
+
+            // Log request and response for each test.
+            _client.InterceptRequest = async req =>
+            {
+                output.WriteLine("REQUEST");
+                output.WriteLine(req.ToString());
+                string content = await req.Content.ReadAsStringAsync();
+                if (!string.IsNullOrWhiteSpace(content)) output.WriteLine(content);
+            };
+            _client.InterceptResponse = async res =>
+            {
+                output.WriteLine("");
+                output.WriteLine("RESPONSE");
+                output.WriteLine(res.ToString());
+                string content = await res.Content.ReadAsStringAsync();
+                output.WriteLine(JToken.Parse(content).ToString(Formatting.Indented));
+            };
+        }
+
+        [DebuggerHidden]
+        private void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
+    }
+
+    // Share the Kraken client between tests in order to respect API rate limits.
+    public class KrakenFixture : IDisposable
+    {
+        public KrakenFixture()
         {
             var configBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
             IConfigurationRoot config = configBuilder.Build();
@@ -18,18 +50,17 @@ namespace KrakenCore.Tests
 
             string privateKey = config["PrivateKey"];
 
-            if (!Enum.TryParse(config["AccountTier"], out RateLimit rateLimit))
+            if (!Enum.TryParse(config["RateLimit"], out RateLimit rateLimit))
                 rateLimit = RateLimit.None;
 
-            _client = new KrakenClient(apiKey, privateKey, rateLimit)
+            Client = new KrakenClient(apiKey, privateKey, rateLimit)
             {
                 WarningsAsExceptions = true
             };
         }
 
-        public void Dispose() => _client.Dispose();
+        public KrakenClient Client { get; }
 
-        [DebuggerHidden]
-        private void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
+        public void Dispose() => Client.Dispose();
     }
 }
