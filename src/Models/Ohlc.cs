@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using KrakenCore.Utils;
+using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
+    [JsonConverter(typeof(OhlcDataConverter))]
     public class OhlcData
     {
-        public Dictionary<string, Ohlc> Ohcls { get; set; }
+        public Ohlc[] Values { get; set; }
 
         /// <summary>
         /// Id to be used as since when polling for new, committed OHLC data.
@@ -12,6 +14,7 @@ namespace KrakenCore.Models
         public long Last { get; set; }
     }
 
+    [JsonConverter(typeof(JArrayToObjectConverter))]
     public class Ohlc
     {
         /// <summary>

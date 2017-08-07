@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using KrakenCore.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
@@ -6,6 +7,31 @@ using System.Reflection;
 
 namespace KrakenCore.Utils
 {
+    internal class OhlcDataConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => true;
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var result = new OhlcData();
+
+            reader.Read(); // StartObject.
+            reader.Read(); // PropertyName of OHLC.
+            result.Values = serializer.Deserialize<Ohlc[]>(reader);
+            reader.Read(); // EndArray.
+            reader.Read(); // PropertyName of Last.
+            result.Last = serializer.Deserialize<long>(reader);
+            reader.Read(); // EndObject.
+
+            return result;
+        }
+
+        public override bool CanWrite => false;
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            => throw new NotImplementedException();
+    }
+
     internal class JObjectToWrappedDictionaryConverter : JsonConverter
     {
         //private readonly string _dictName;

@@ -5,6 +5,8 @@ namespace KrakenCore.Models
 {
     public class AssetPair
     {
+        public const string LotUnit = "unit";
+
         /// <summary>
         /// Alternate pair name.
         /// </summary>
@@ -34,7 +36,7 @@ namespace KrakenCore.Models
         public string Quote { get; set; }
 
         /// <summary>
-        /// Vsolume lot size.
+        /// Volume lot size.
         /// </summary>
         public string Lot { get; set; }
 
@@ -89,7 +91,7 @@ namespace KrakenCore.Models
         public decimal MarginStop { get; set; }
     }
 
-    [JsonConverter(typeof(JArrayToStructConverter))]
+    [JsonConverter(typeof(JArrayToObjectConverter))]
     public struct Fee
     {
         public decimal Volume;

@@ -6,10 +6,8 @@ using System.Reflection;
 
 namespace KrakenCore.Utils
 {
-    internal class JArrayToStructConverter : JsonConverter
+    internal class JArrayToObjectConverter : JsonConverter
     {
-        public override bool CanWrite => false;
-
         public override bool CanConvert(Type objectType) => true;
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -25,6 +23,8 @@ namespace KrakenCore.Utils
             }
             return existingValue;
         }
+
+        public override bool CanWrite => false;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             => throw new NotImplementedException();

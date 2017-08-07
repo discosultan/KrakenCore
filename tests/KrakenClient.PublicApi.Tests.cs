@@ -59,18 +59,55 @@ namespace KrakenCore.Tests
         public async Task GetTradableAssetPairs()
         {
             var res = await _client.GetTradableAssetPairs();
+
+            var assetPair = res.Result.First(x => x.Key == "XETHZEUR").Value;
+            Assert.Equal("ETHEUR", assetPair.AlternateName);
+            Assert.Equal(AssetInfo.AssetClassCurrency, assetPair.AssetClassBase);
+            Assert.Equal(AssetInfo.AssetClassCurrency, assetPair.AssetClassQuote);
+            Assert.Equal("XETH", assetPair.Base);
+            Assert.Equal("ZEUR", assetPair.Quote);
+            Assert.Equal(AssetPair.LotUnit, assetPair.Lot);
+            AssertNotDefault(assetPair.PairDecimals);
+            AssertNotDefault(assetPair.LotDecimals);
+            AssertNotDefault(assetPair.LotMultiplier);
+            AssertNotDefault(assetPair.LeverageBuy);
+            AssertNotDefault(assetPair.LeverageSell);
+            AssertNotDefault(assetPair.Fees);
+            AssertNotDefault(assetPair.FeesMaker);
         }
 
         [Fact]
         public async Task GetTickerInformation()
         {
             var res = await _client.GetTickerInformation("ETHEUR");
+
+            var tickerInfo = res.Result.First(x => x.Key == "XETHZEUR").Value;
+            AssertNotDefault(tickerInfo.Ask);
+            AssertNotDefault(tickerInfo.Bid);
+            AssertNotDefault(tickerInfo.Closed);
+            AssertNotDefault(tickerInfo.High);
+            AssertNotDefault(tickerInfo.Low);
+            AssertNotDefault(tickerInfo.Open);
+            AssertNotDefault(tickerInfo.Trades);
+            AssertNotDefault(tickerInfo.Volume);
+            AssertNotDefault(tickerInfo.VWAP);
         }
 
         [Fact]
-        public async Task GetOhclData()
+        public async Task GetOhlcData()
         {
             var res = await _client.GetOhlcData("ETHEUR");
+
+            AssertNotDefault(res.Result.Last);
+            var ohlc = res.Result.Values.First();
+            AssertNotDefault(ohlc.Close);
+            AssertNotDefault(ohlc.Count);
+            AssertNotDefault(ohlc.High);
+            AssertNotDefault(ohlc.Low);
+            AssertNotDefault(ohlc.Open);
+            AssertNotDefault(ohlc.Time);
+            AssertNotDefault(ohlc.Volume);
+            AssertNotDefault(ohlc.Vwap);
         }
 
         [Fact]
