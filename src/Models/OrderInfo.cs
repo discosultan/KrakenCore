@@ -1,17 +1,31 @@
-﻿using Newtonsoft.Json;
+﻿using KrakenCore.Utils;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
-    public class ClosedOrdersInfo
-    {
-        public Dictionary<string, OrderInfo> Closed { get; set; }
+    //public class ClosedOrders
+    //{
+    //    public Dictionary<string, OrderInfo> Closed { get; set; }
 
-        public int Count { get; set; }
+    //    public int Count { get; set; }
+    //}
+
+    [JsonConverter(typeof(OpenClosedOrdersConverter))]
+    public class ClosedOrders : Dictionary<string, OrderInfo>
+    {
+    }
+
+    [JsonConverter(typeof(OpenClosedOrdersConverter))]
+    public class OpenOrders : Dictionary<string, OrderInfo>
+    {
     }
 
     public class OrderInfo
     {
+        public const string StatusOpen = "open";
+        public const string StatusClosed = "closed";
+
         /// <summary>
         /// Referral order transaction id that created this order.
         /// </summary>
@@ -38,25 +52,25 @@ namespace KrakenCore.Models
         /// Unix timestamp of when order was placed.
         /// </summary>
         [JsonProperty("opentm")]
-        public string OpenTime { get; set; }
+        public double OpenTime { get; set; }
 
         /// <summary>
         /// Unix timestamp of order start time (or 0 if not set).
         /// </summary>
         [JsonProperty("starttm")]
-        public string StartTime { get; set; }
+        public double StartTime { get; set; }
 
         /// <summary>
         /// Unix timestamp of order end time (or 0 if not set).
         /// </summary>
         [JsonProperty("expiretm")]
-        public string ExpireTime { get; set; }
+        public double ExpireTime { get; set; }
 
         /// <summary>
         /// Unix timestamp of when order was closed.
         /// </summary>
         [JsonProperty("closetm")]
-        public string CloseTime { get; set; }
+        public double CloseTime { get; set; }
 
         /// <summary>
         /// Additional info on status (if any).
@@ -130,49 +144,52 @@ namespace KrakenCore.Models
         /// <summary>
         /// Array of trade ids related to order (if trades info requested and data available).
         /// </summary>
-        public List<string> Trades { get; set; }
+        public string[] Trades { get; set; }
     }
 
     public class OrderDescription
     {
+        public const string TypeSell = "sell";
+        public const string TypeBuy = "buy";
+
         /// <summary>
         /// Asset pair.
         /// </summary>
-        public string Pair;
+        public string Pair { get; set; }
 
         /// <summary>
         /// Type of order (buy/sell).
         /// </summary>
-        public string Type;
+        public string Type { get; set; }
 
         /// <summary>
-        /// Order type (See Add standard order).
+        /// Order type (See <see cref="KrakenClient.AddStandardOrder"/>).
         /// </summary>
-        public string OrderType;
+        public string OrderType { get; set; }
 
         /// <summary>
         /// Primary price.
         /// </summary>
-        public decimal Price;
+        public decimal Price { get; set; }
 
         /// <summary>
         /// Secondary price
         /// </summary>
-        public decimal Price2;
+        public decimal Price2 { get; set; }
 
         /// <summary>
         /// Amount of leverage
         /// </summary>
-        public string Leverage;
+        public string Leverage { get; set; }
 
         /// <summary>
         /// Order description.
         /// </summary>
-        public string Order;
+        public string Order { get; set; }
 
         /// <summary>
         /// Conditional close order description (if conditional close set).
         /// </summary>
-        public string Close;
+        public string Close { get; set; }
     }
 }

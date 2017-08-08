@@ -17,7 +17,7 @@ namespace KrakenCore.Models
         /// Reference id.
         /// </summary>
         [JsonProperty("refid")]
-        public string ReferenceId { get; set; }
+        public string RefId { get; set; }
 
         /// <summary>
         /// Unix timestamp of ledger.

@@ -47,18 +47,18 @@ namespace KrakenCore
         /// <param name="includeTrades">
         /// Whether or not to include trades in output (optional. default = false).
         /// </param>
-        /// <param name="userReference">Restrict results to given user reference id (optional).</param>
+        /// <param name="userRef">Restrict results to given user reference id (optional).</param>
         /// <returns>Dictionary of order info in open array with txid as the key.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<Dictionary<string, OrderInfo>>> GetOpenOrders(bool? includeTrades = null, string userReference = null)
+        public Task<KrakenResponse<OpenOrders>> GetOpenOrders(bool? includeTrades = null, string userRef = null)
         {
-            return QueryPrivate<Dictionary<string, OrderInfo>>(
+            return QueryPrivate<OpenOrders>(
                 "/0/private/OpenOrders",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
-                    ["userref"] = userReference
+                    ["userref"] = userRef
                 });
         }
 
@@ -69,7 +69,7 @@ namespace KrakenCore
         /// <param name="includeTrades">
         /// Whether or not to include trades in output (optional. default = false).
         /// </param>
-        /// <param name="userReference">Restrict results to given user reference id (optional).</param>
+        /// <param name="userRef">Restrict results to given user reference id (optional).</param>
         /// <param name="start">Starting unix timestamp or order tx id of results (optional. exclusive).</param>
         /// <param name="end">Ending unix timestamp or order tx id of results (optional. inclusive).</param>
         /// <param name="offset">Result offset.</param>
@@ -82,20 +82,20 @@ namespace KrakenCore
         /// <returns>Array of order info.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<ClosedOrdersInfo>> GetClosedOrders(
+        public Task<KrakenResponse<ClosedOrders>> GetClosedOrders(
             bool? includeTrades = null,
-            string userReference = null,
+            string userRef = null,
             long? start = null,
             long? end = null,
             int? offset = null,
             string closeTime = null)
         {
-            return QueryPrivate<ClosedOrdersInfo>(
+            return QueryPrivate<ClosedOrders>(
                 "/0/private/ClosedOrders",
                 new Dictionary<string, string>(6 + AdditionalPrivateQueryArgs)
                 {
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
-                    ["userref"] = userReference,
+                    ["userref"] = userRef,
                     ["start"] = start?.ToString(),
                     ["end"] = end?.ToString(),
                     ["ofs"] = offset?.ToString(),
@@ -109,21 +109,21 @@ namespace KrakenCore
         /// <param name="includeTrades">
         /// Whether or not to include trades in output (optional. default = false).
         /// </param>
-        /// <param name="userReference">Restrict results to given user reference id (optional).</param>
+        /// <param name="userRef">Restrict results to given user reference id (optional).</param>
         /// <returns>Dictionary of orders info.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> QueryOrdersInfo(
             string transactionIds,
             bool? includeTrades = null,
-            string userReference = null)
+            string userRef = null)
         {
             return QueryPrivate<Dictionary<string, OrderInfo>>(
                 "/0/private/QueryOrders",
                 new Dictionary<string, string>(3 + AdditionalPrivateQueryArgs)
                 {
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
-                    ["userref"] = userReference,
+                    ["userref"] = userRef,
                     ["txid"] = transactionIds
                 });
         }
@@ -365,7 +365,7 @@ namespace KrakenCore
         /// <para>+{n} = expire {n} seconds from now</para>
         /// <para>{n} = unix timestamp of expiration time</para>
         /// </param>
-        /// <param name="userReference">User reference id. 32-bit signed number. (optional).</param>
+        /// <param name="userRef">User reference id. 32-bit signed number. (optional).</param>
         /// <param name="validate">Validate inputs only. Do not submit order (optional).</param>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
@@ -380,7 +380,7 @@ namespace KrakenCore
             string orderFlags = null,
             string startTime = null,
             string expireTime = null,
-            string userReference = null,
+            string userRef = null,
             bool? validate = null)
         {
             return QueryPrivate<AddOrderResult>(
@@ -397,7 +397,7 @@ namespace KrakenCore
                     ["oflags"] = orderFlags,
                     ["starttm"] = startTime,
                     ["expiretm"] = expireTime,
-                    ["userref"] = userReference,
+                    ["userref"] = userRef,
                     ["validate"] = (validate ?? false) ? "true" : "false"
                 });
         }

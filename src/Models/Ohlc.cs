@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
-    [JsonConverter(typeof(OhlcDataConverter))]
+    [JsonConverter(typeof(TimestampedPairResultConverter<Ohlc>))]
     public class OhlcData
     {
         public Ohlc[] Values { get; set; }

@@ -114,18 +114,45 @@ namespace KrakenCore.Tests
         public async Task GetOrderBook()
         {
             var res = await _client.GetOrderBook("ETHEUR");
+
+            var ask = res.Result.Asks.First();
+            AssertOrderBookEntryNotDefault(ask);
+            var bid = res.Result.Bids.First();
+            AssertOrderBookEntryNotDefault(bid);
+
+            void AssertOrderBookEntryNotDefault(Order order)
+            {
+                AssertNotDefault(order.Price);
+                AssertNotDefault(order.Timestamp);
+                AssertNotDefault(order.Volume);
+            }
         }
 
         [Fact]
         public async Task GetRecentTrades()
         {
             var res = await _client.GetRecentTrades("ETHEUR");
+
+            AssertNotDefault(res.Result.Last);
+            var trade = res.Result.Values.First();
+            AssertNotDefault(trade.Misc);
+            AssertNotDefault(trade.Price);
+            AssertNotDefault(trade.Side);
+            AssertNotDefault(trade.Time);
+            AssertNotDefault(trade.Type);
+            AssertNotDefault(trade.Volume);
         }
 
         [Fact]
         public async Task GetRecentSpreadData()
         {
             var res = await _client.GetRecentSpreadData("ETHEUR");
+
+            AssertNotDefault(res.Result.Last);
+            var spread = res.Result.Values.First();
+            AssertNotDefault(spread.Ask);
+            AssertNotDefault(spread.Bid);
+            AssertNotDefault(spread.Time);
         }
     }
 }

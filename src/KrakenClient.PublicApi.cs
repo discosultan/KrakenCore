@@ -123,9 +123,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and market depth.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<Dictionary<string, OrderBook>>> GetOrderBook(string pair, int? count = null)
+        public Task<KrakenResponse<OrderBook>> GetOrderBook(string pair, int? count = null)
         {
-            return QueryPublic<Dictionary<string, OrderBook>>(
+            return QueryPublic<OrderBook>(
                 "/0/public/Depth",
                 new Dictionary<string, string>(2)
                 {
@@ -161,9 +161,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and recent spread data.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<RecentSpreads>> GetRecentSpreadData(string pair, long? since = null)
+        public Task<KrakenResponse<RecentSpreadData>> GetRecentSpreadData(string pair, long? since = null)
         {
-            return QueryPublic<RecentSpreads>(
+            return QueryPublic<RecentSpreadData>(
                 "/0/public/Spread",
                 new Dictionary<string, string>(2)
                 {

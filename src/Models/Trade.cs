@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using KrakenCore.Utils;
+using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
+    [JsonConverter(typeof(TimestampedPairResultConverter<Trade>))]
     public class RecentTrades
     {
-        public Dictionary<string, Trade[]> Trades { get; set; }
+        public Trade[] Values { get; set; }
 
         /// <summary>
         /// Id to be used as since when polling for new trade data.
@@ -12,13 +14,14 @@ namespace KrakenCore.Models
         public long Last { get; set; }
     }
 
+    [JsonConverter(typeof(JArrayToObjectConverter))]
     public class Trade
     {
         public decimal Price { get; set; }
 
         public decimal Volume { get; set; }
 
-        public int Time { get; set; }
+        public double Time { get; set; }
 
         public string Side { get; set; }
 

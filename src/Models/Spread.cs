@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using KrakenCore.Utils;
+using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
-    public class RecentSpreads
+    [JsonConverter(typeof(TimestampedPairResultConverter<Spread>))]
+    public class RecentSpreadData
     {
-        public Dictionary<string, Spread[]> Spreads { get; set; }
+        public Spread[] Values { get; set; }
 
         /// <summary>
         /// Id to be used as since when polling for new spread data.
@@ -12,9 +14,10 @@ namespace KrakenCore.Models
         public long Last { get; set; }
     }
 
+    [JsonConverter(typeof(JArrayToObjectConverter))]
     public class Spread
     {
-        public int Time { get; set; }
+        public long Time { get; set; }
 
         public decimal Bid { get; set; }
 

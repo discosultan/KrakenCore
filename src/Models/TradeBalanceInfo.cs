@@ -38,7 +38,7 @@ namespace KrakenCore.Models
         /// Current floating valuation of open positions.
         /// </summary>
         [JsonProperty(PropertyName = "v")]
-        public decimal FloatingValutation { get; set; }
+        public decimal FloatingValuation { get; set; }
 
         /// <summary>
         /// Equity = trade balance + unrealized net profit/loss.
@@ -47,7 +47,7 @@ namespace KrakenCore.Models
         public decimal Equity { get; set; }
 
         /// <summary>
-        /// Free margin = equity - initial margin(maximum margin available to open new positions).
+        /// Free margin = equity - initial margin (maximum margin available to open new positions).
         /// </summary>
         [JsonProperty(PropertyName = "mf")]
         public decimal FreeMargin { get; set; }

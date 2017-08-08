@@ -3,21 +3,22 @@ using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
+    [JsonConverter(typeof(OrderBookConverter))]
     public class OrderBook
     {
         /// <summary>
         /// Ask side array of array entries({price}, {volume}, {timestamp}).
         /// </summary>
-        public OrderBookEntry[] Asks { get; set; }
+        public Order[] Asks { get; set; }
 
         /// <summary>
         /// Bid side array of array entries({price}, {volume}, {timestamp}).
         /// </summary>
-        public OrderBookEntry[] Bids { get; set; }
+        public Order[] Bids { get; set; }
     }
 
     [JsonConverter(typeof(JArrayToObjectConverter))]
-    public class OrderBookEntry
+    public class Order
     {
         public decimal Price { get; set; }
 

@@ -34,7 +34,7 @@ namespace KrakenCore.Tests
             };
         }
 
-        [DebuggerHidden]
+        [DebuggerStepThrough]
         private void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
     }
 
