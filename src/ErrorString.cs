@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace KrakenCore.Models
+namespace KrakenCore
 {
     public class ErrorString
     {

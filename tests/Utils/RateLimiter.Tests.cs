@@ -16,10 +16,7 @@ namespace KrakenCore.Tests.Utils
         public RateLimiterTests()
         {
             _stopwatch = new ManualStopwatch();
-            _rateLimiter = new RateLimiter(
-                limit: CallLimit,
-                decreaseTime: CallCounterDecreaseTime,
-                stopwatch: _stopwatch);
+            _rateLimiter = new RateLimiter(CallLimit, CallCounterDecreaseTime, _stopwatch);
         }
 
         [Fact]

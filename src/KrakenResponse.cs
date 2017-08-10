@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
-namespace KrakenCore.Models
+namespace KrakenCore
 {
     public class KrakenResponse<T>
     {
