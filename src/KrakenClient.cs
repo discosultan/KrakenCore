@@ -21,7 +21,9 @@ namespace KrakenCore
     {
         internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
-            ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() },
+            // Ignore deserializing count properties, since .NET collections already expose that.
+            //Error = (obj, args) => args.ErrorContext.Handled = args.ErrorContext.Member.ToString() == "count"
         };
 
         private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
@@ -87,7 +89,9 @@ namespace KrakenCore
 
         public HttpRequestHeaders DefaultHeaders => _httpClient.DefaultRequestHeaders;
 
-        public bool WarningsAsExceptions { get; set; } = true;
+        public bool ErrorsAsExceptions { get; set; } = true;
+
+        public bool WarningsAsExceptions { get; set; }
 
         /// <summary>
         /// Gets or sets the getter function for a nonce.
@@ -189,16 +193,16 @@ namespace KrakenCore
 
         private async Task<KrakenResponse<T>> SendRequest<T>(HttpRequestMessage req, RateLimiter rateLimiter, int cost)
         {
-            // Allow interception of request by the consumer of this client.
-            if (InterceptRequest != null)
-            {
-                await InterceptRequest(req).ConfigureAwait(false);
-            }
-
             // Wait before sending the request if rate limiter is enabled and counter is full.
             if (rateLimiter != null && cost > 0)
             {
                 await rateLimiter.WaitAccess(cost).ConfigureAwait(false);
+            }
+
+            // Allow interception of request by the consumer of this client.
+            if (InterceptRequest != null)
+            {
+                await InterceptRequest(req).ConfigureAwait(false);
             }
 
             // Perform the HTTP request.
@@ -219,12 +223,12 @@ namespace KrakenCore
 
             // Throw for API-level error and warning if configured.
             if (result.Errors.Any(x =>
-                x.SeverityCode == ErrorString.SeverityCodeError ||
+                ErrorsAsExceptions && x.SeverityCode == ErrorString.SeverityCodeError ||
                 WarningsAsExceptions && x.SeverityCode == ErrorString.SeverityCodeWarning))
             {
                 throw new KrakenException(result.Errors, "There was a problem with a response from Kraken.");
             }
-            
+
             return result;
         }
 

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
-    [JsonConverter(typeof(OrderBookConverter))]
+    //[JsonConverter(typeof(OrderBookConverter))]
     public class OrderBook
     {
         /// <summary>

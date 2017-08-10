@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
-    public class TradesInfo
+    public class TradesHistory
     {
         public Dictionary<string, TradeInfo> Trades { get; set; }
 
-        public long Count { get; set; }
+        public int Count { get; set; }
     }
 
     public class TradeInfo
@@ -26,7 +26,7 @@ namespace KrakenCore.Models
         /// <summary>
         /// Unix timestamp of trade.
         /// </summary>
-        public string Time { get; set; } // TODO: validate data type
+        public double Time { get; set; }
 
         /// <summary>
         /// Type of order (buy/sell).
@@ -36,6 +36,7 @@ namespace KrakenCore.Models
         /// <summary>
         /// Order type.
         /// </summary>
+        [JsonProperty("ordertype")]
         public string OrderType { get; set; }
 
         /// <summary>

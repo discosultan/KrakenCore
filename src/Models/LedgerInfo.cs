@@ -5,7 +5,7 @@ namespace KrakenCore.Models
 {
     public class LedgersInfo
     {
-        public long Count { get; set; }
+        public int Count { get; set; }
 
         [JsonProperty("ledger")]
         public Dictionary<string, LedgerInfo> Ledgers { get; set; }

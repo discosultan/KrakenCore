@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 
 namespace KrakenCore.Tests
 {
+    [TestCaseOrderer("KrakenCore.Tests.Utils.PriorityOrderer", "KrakenCore.Tests")]
     public partial class KrakenClientTests : IClassFixture<KrakenFixture>
     {
         private readonly KrakenClient _client;
@@ -55,6 +56,7 @@ namespace KrakenCore.Tests
 
             Client = new KrakenClient(apiKey, privateKey, rateLimit)
             {
+                ErrorsAsExceptions = true,
                 WarningsAsExceptions = true
             };
         }

@@ -1,24 +1,18 @@
-﻿using KrakenCore.Utils;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
-    //public class ClosedOrders
-    //{
-    //    public Dictionary<string, OrderInfo> Closed { get; set; }
-
-    //    public int Count { get; set; }
-    //}
-
-    [JsonConverter(typeof(OpenClosedOrdersConverter))]
-    public class ClosedOrders : Dictionary<string, OrderInfo>
+    public class OpenOrders
     {
+        public Dictionary<string, OrderInfo> Open { get; set; }
     }
 
-    [JsonConverter(typeof(OpenClosedOrdersConverter))]
-    public class OpenOrders : Dictionary<string, OrderInfo>
+    public class ClosedOrders
     {
+        public Dictionary<string, OrderInfo> Closed { get; set; }
+
+        public int Count { get; set; }
     }
 
     public class OrderInfo

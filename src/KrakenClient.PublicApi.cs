@@ -1,4 +1,5 @@
 ﻿using KrakenCore.Models;
+using KrakenCore.Utils;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -105,9 +106,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and OHLC data</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<OhlcData>> GetOhlcData(string pair, int? interval = null, long? since = null)
+        public Task<KrakenResponse<TimestampedDictionary<string, Ohlc[]>>> GetOhlcData(string pair, int? interval = null, long? since = null)
         {
-            return QueryPublic<OhlcData>(
+            return QueryPublic<TimestampedDictionary<string, Ohlc[]>>(
                 "/0/public/OHLC",
                 new Dictionary<string, string>(3)
                 {
@@ -123,9 +124,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and market depth.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<OrderBook>> GetOrderBook(string pair, int? count = null)
+        public Task<KrakenResponse<Dictionary<string, OrderBook>>> GetOrderBook(string pair, int? count = null)
         {
-            return QueryPublic<OrderBook>(
+            return QueryPublic<Dictionary<string, OrderBook>>(
                 "/0/public/Depth",
                 new Dictionary<string, string>(2)
                 {
@@ -140,9 +141,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and recent trade data.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<RecentTrades>> GetRecentTrades(string pair, long? since = null)
+        public Task<KrakenResponse<TimestampedDictionary<string, Trade[]>>> GetRecentTrades(string pair, long? since = null)
         {
-            return QueryPublic<RecentTrades>(
+            return QueryPublic<TimestampedDictionary<string, Trade[]>>(
                 "/0/public/Trades",
                 new Dictionary<string, string>(2)
                 {
@@ -161,9 +162,9 @@ namespace KrakenCore
         /// <returns>Dictionary of pair name and recent spread data.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<RecentSpreadData>> GetRecentSpreadData(string pair, long? since = null)
+        public Task<KrakenResponse<TimestampedDictionary<string, Spread[]>>> GetRecentSpreadData(string pair, long? since = null)
         {
-            return QueryPublic<RecentSpreadData>(
+            return QueryPublic<TimestampedDictionary<string, Spread[]>>(
                 "/0/public/Spread",
                 new Dictionary<string, string>(2)
                 {

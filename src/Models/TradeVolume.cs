@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace KrakenCore.Models
 {
@@ -35,26 +36,31 @@ namespace KrakenCore.Models
         /// <summary>
         /// Minimum fee for pair (if not fixed fee).
         /// </summary>
+        [JsonProperty("minfee")]
         public decimal MinFee { get; set; }
 
         /// <summary>
         /// Maximum fee for pair (if not fixed fee).
         /// </summary>
+        [JsonProperty("maxfee")]
         public decimal MaxFee { get; set; }
 
         /// <summary>
         /// Next tier's fee for pair (if not fixed fee. 0 if at lowest fee tier).
         /// </summary>
+        [JsonProperty("nextfee")]
         public decimal NextFee { get; set; }
 
         /// <summary>
         /// Volume level of next tier (if not fixed fee. 0 if at lowest fee tier).
         /// </summary>
+        [JsonProperty("nextvolume")]
         public decimal NextVolume { get; set; }
 
         /// <summary>
         /// Volume level of current tier (if not fixed fee. 0 if at lowest fee tier).
         /// </summary>
+        [JsonProperty("tiervolume")]
         public decimal TierVolume { get; set; }
     }
 }

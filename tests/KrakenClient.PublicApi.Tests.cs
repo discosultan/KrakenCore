@@ -7,6 +7,12 @@ namespace KrakenCore.Tests
 {
     public partial class KrakenClientTests
     {
+        private const string DefaultBase = "XETH";
+        private const string DefaultBaseAlternate = "ETH";
+        private const string DefaultQuote = "ZEUR";
+        private const string DefaultPair = DefaultBase + DefaultQuote;
+        private const string DefaultPairAlternate = "ETHEUR";
+
         [Fact]
         public async Task GetServerTime()
         {
@@ -32,11 +38,12 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetAssetInfo_Eth()
         {
-            var res = await _client.GetAssetInfo(assetClass: AssetInfo.AssetClassCurrency, assets: "ETH");
+            var res = await _client.GetAssetInfo(assetClass: AssetInfo.AssetClassCurrency, assets: DefaultBase);
 
-            var firstInfo = res.Result.Values.First();
-            Assert.Equal(AssetInfo.AssetClassCurrency, firstInfo.AssetClass);
-            Assert.Equal("ETH", firstInfo.AlternateName);
+            var assetInfo = res.Result.First();
+            Assert.Equal(DefaultBase, assetInfo.Key);
+            Assert.Equal(AssetInfo.AssetClassCurrency, assetInfo.Value.AssetClass);
+            Assert.Equal(DefaultBaseAlternate, assetInfo.Value.AlternateName);
         }
 
         [Fact]
@@ -60,12 +67,12 @@ namespace KrakenCore.Tests
         {
             var res = await _client.GetTradableAssetPairs();
 
-            var assetPair = res.Result.First(x => x.Key == "XETHZEUR").Value;
-            Assert.Equal("ETHEUR", assetPair.AlternateName);
+            var assetPair = res.Result.First(x => x.Key == DefaultPair).Value;
+            Assert.Equal(DefaultPairAlternate, assetPair.AlternateName);
             Assert.Equal(AssetInfo.AssetClassCurrency, assetPair.AssetClassBase);
             Assert.Equal(AssetInfo.AssetClassCurrency, assetPair.AssetClassQuote);
-            Assert.Equal("XETH", assetPair.Base);
-            Assert.Equal("ZEUR", assetPair.Quote);
+            Assert.Equal(DefaultBase, assetPair.Base);
+            Assert.Equal(DefaultQuote, assetPair.Quote);
             Assert.Equal(AssetPair.LotUnit, assetPair.Lot);
             AssertNotDefault(assetPair.PairDecimals);
             AssertNotDefault(assetPair.LotDecimals);
@@ -79,9 +86,9 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetTickerInformation()
         {
-            var res = await _client.GetTickerInformation("ETHEUR");
+            var res = await _client.GetTickerInformation(DefaultPair);
 
-            var tickerInfo = res.Result.First(x => x.Key == "XETHZEUR").Value;
+            var tickerInfo = res.Result.First(x => x.Key == DefaultPair).Value;
             AssertNotDefault(tickerInfo.Ask);
             AssertNotDefault(tickerInfo.Bid);
             AssertNotDefault(tickerInfo.Closed);
@@ -96,10 +103,12 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetOhlcData()
         {
-            var res = await _client.GetOhlcData("ETHEUR");
+            var res = await _client.GetOhlcData(DefaultPair);
 
             AssertNotDefault(res.Result.Last);
-            var ohlc = res.Result.Values.First();
+            var pair = res.Result.First();
+            Assert.Equal(DefaultPair, pair.Key);
+            var ohlc = pair.Value.First();
             AssertNotDefault(ohlc.Close);
             AssertNotDefault(ohlc.Count);
             AssertNotDefault(ohlc.High);
@@ -113,11 +122,13 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetOrderBook()
         {
-            var res = await _client.GetOrderBook("ETHEUR");
+            var res = await _client.GetOrderBook(DefaultPair);
 
-            var ask = res.Result.Asks.First();
+            var orderBook = res.Result.First();
+            Assert.Equal(DefaultPair, orderBook.Key);
+            var ask = orderBook.Value.Asks.First();
             AssertOrderBookEntryNotDefault(ask);
-            var bid = res.Result.Bids.First();
+            var bid = orderBook.Value.Bids.First();
             AssertOrderBookEntryNotDefault(bid);
 
             void AssertOrderBookEntryNotDefault(Order order)
@@ -131,10 +142,10 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetRecentTrades()
         {
-            var res = await _client.GetRecentTrades("ETHEUR");
+            var res = await _client.GetRecentTrades(DefaultPair);
 
             AssertNotDefault(res.Result.Last);
-            var trade = res.Result.Values.First();
+            var trade = res.Result.First(x => x.Key == DefaultPair).Value.First();
             AssertNotDefault(trade.Misc);
             AssertNotDefault(trade.Price);
             AssertNotDefault(trade.Side);
@@ -146,10 +157,10 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetRecentSpreadData()
         {
-            var res = await _client.GetRecentSpreadData("ETHEUR");
+            var res = await _client.GetRecentSpreadData(DefaultPair);
 
             AssertNotDefault(res.Result.Last);
-            var spread = res.Result.Values.First();
+            var spread = res.Result.First(x => x.Key == DefaultPair).Value.First();
             AssertNotDefault(spread.Ask);
             AssertNotDefault(spread.Bid);
             AssertNotDefault(spread.Time);

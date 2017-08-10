@@ -153,15 +153,15 @@ namespace KrakenCore
         /// <returns>Dictionary of trade info.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<object>> GetTradesHistory(
+        public Task<KrakenResponse<TradesHistory>> GetTradesHistory(
             string type = null,
             bool? includeTrades = null,
             long? start = null,
             long? end = null,
             int? offset = null)
         {
-            return QueryPrivate<object>(
-                "/0/private/ClosedOrders",
+            return QueryPrivate<TradesHistory> (
+                "/0/private/TradesHistory",
                 new Dictionary<string, string>(5 + AdditionalPrivateQueryArgs)
                 {
                     ["type"] = type,
@@ -212,7 +212,7 @@ namespace KrakenCore
             bool? doCalculations = null)
         {
             return QueryPrivate<Dictionary<string, PositionInfo>>(
-                "/0/private/QueryTrades",
+                "/0/private/OpenPositions",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
                     ["txid"] = transactionIds,
