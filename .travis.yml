@@ -1,0 +1,20 @@
+language: csharp
+
+os:
+  - osx
+  - linux
+
+# .NET CLI requires Ubuntu 14.04.
+sudo: required
+dist: trusty
+
+# .NET CLI requires OSX 10.10.
+osx_image: xcode8.3
+
+mono: none
+dotnet: 1.0.4
+
+script:
+  - ulimit -n 4096
+  - dotnet restore
+  - dotnet test

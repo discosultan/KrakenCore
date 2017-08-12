@@ -1,6 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <Authors>discosultan</Authors>
+    <Company />
+    <Description>Kraken bitcoin exchange API for .NET Standard</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/discosultan/KrakenCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/discosultan/KrakenCore</RepositoryUrl>
+    <PackageReleaseNotes>Initial prerelease.</PackageReleaseNotes>
+    <Version>1.0.0-alpha01</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard1.6\KrakenCore.xml</DocumentationFile>

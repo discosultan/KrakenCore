@@ -1,5 +1,4 @@
 ﻿using KrakenCore.Models;
-using KrakenCore.Utils;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
