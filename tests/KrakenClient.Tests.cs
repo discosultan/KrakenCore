@@ -24,6 +24,7 @@ namespace KrakenCore.Tests
                 output.WriteLine(req.ToString());
                 string content = await req.Content.ReadAsStringAsync();
                 if (!string.IsNullOrWhiteSpace(content)) output.WriteLine(content);
+                return req;
             };
             _client.InterceptResponse = async res =>
             {
@@ -32,6 +33,7 @@ namespace KrakenCore.Tests
                 output.WriteLine(res.ToString());
                 string content = await res.Content.ReadAsStringAsync();
                 output.WriteLine(JToken.Parse(content).ToString(Formatting.Indented));
+                return res;
             };
         }
 
@@ -57,7 +59,9 @@ namespace KrakenCore.Tests
             Client = new KrakenClient(apiKey, privateKey, rateLimit)
             {
                 ErrorsAsExceptions = true,
-                WarningsAsExceptions = true
+                WarningsAsExceptions = true,
+                // If the API key has two factor password enabled, set the line below to return it.
+                //GetTwoFactorPassword = () => "<PASSWORD>"
             };
         }
 

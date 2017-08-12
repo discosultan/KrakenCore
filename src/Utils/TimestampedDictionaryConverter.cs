@@ -10,13 +10,15 @@ namespace KrakenCore.Utils
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var result = Activator.CreateInstance(objectType);
+            object result = Activator.CreateInstance(objectType);
 
             Type typeKey = objectType.GenericTypeArguments[0];
             Type typeValue = objectType.GenericTypeArguments[1];
 
-            var propLast = objectType.GetRuntimeProperty(nameof(TimestampedDictionary<int, int>.Last));
-            var methodAdd = objectType.GetRuntimeMethod(nameof(TimestampedDictionary<int, int>.Add), new[] { typeKey, typeValue });
+            PropertyInfo propLast = objectType
+                .GetRuntimeProperty(nameof(TimestampedDictionary<int, int>.Last));
+            MethodInfo methodAdd = objectType
+                .GetRuntimeMethod(nameof(TimestampedDictionary<int, int>.Add), new[] { typeKey, typeValue });
 
             reader.Read();
             while (reader.TokenType != JsonToken.EndObject)

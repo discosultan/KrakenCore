@@ -1,10 +1,10 @@
-﻿using KrakenCore.Models;
-using KrakenCore.Utils;
+﻿using KrakenCore.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -21,9 +21,7 @@ namespace KrakenCore
     {
         internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
-            ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() },
-            // Ignore deserializing count properties, since .NET collections already expose that.
-            //Error = (obj, args) => args.ErrorContext.Handled = args.ErrorContext.Member.ToString() == "count"
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
         };
 
         private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
@@ -98,11 +96,18 @@ namespace KrakenCore
         /// <para>API expects an increasing value for each request.</para>
         /// <para>By default uses <c>DateTime.UtcNow.Ticks</c>.</para>
         /// </summary>
-        public Func<long> GetNonce { get; set; } = () => DateTime.UtcNow.Ticks;
+        public Func<Task<long>> GetNonce { get; set; } = () => Task.FromResult(DateTime.UtcNow.Ticks);
 
-        public Func<HttpRequestMessage, Task> InterceptRequest { get; set; } // Nullable
+        /// <summary>
+        /// Gets or sets the getter function for a two-factor password.
+        /// <para>Set to <c>null</c> to disable.</para>
+        /// <para>By default disabled.</para>
+        /// </summary>
+        public Func<Task<string>> GetTwoFactorPassword { get; set; } // Nullable
 
-        public Func<HttpResponseMessage, Task> InterceptResponse { get; set; } // Nullable
+        public Func<HttpRequestMessage, Task<HttpRequestMessage>> InterceptRequest { get; set; } // Nullable
+
+        public Func<HttpResponseMessage, Task<HttpResponseMessage>> InterceptResponse { get; set; } // Nullable
 
         /// <summary>
         /// Sends a public POST request to the Kraken API as an asynchronous operation.
@@ -156,9 +161,16 @@ namespace KrakenCore
             args = args ?? new Dictionary<string, string>(AdditionalPrivateQueryArgs);
 
             // Add additional args.
-            string nonce = (GetNonce?.Invoke() ?? DateTime.UtcNow.Ticks).ToString();
-            args["nonce"] = nonce;
-            // TODO: Add otp if two-factor enabled.
+            string nonce = null;
+            if (GetNonce != null)
+            {
+                nonce = (await GetNonce().ConfigureAwait(false)).ToString();
+                args["nonce"] = nonce;
+            }
+            if (GetTwoFactorPassword != null)
+            {
+                args["otp"] = WebUtility.UrlEncode(await GetTwoFactorPassword().ConfigureAwait(false));
+            }
 
             // Setup request.
             string urlEncodedArgs = UrlEncode(args);
@@ -202,7 +214,7 @@ namespace KrakenCore
             // Allow interception of request by the consumer of this client.
             if (InterceptRequest != null)
             {
-                await InterceptRequest(req).ConfigureAwait(false);
+                req = await InterceptRequest(req).ConfigureAwait(false);
             }
 
             // Perform the HTTP request.
@@ -214,7 +226,7 @@ namespace KrakenCore
             // Allow interception of response by the consumer of this client.
             if (InterceptResponse != null)
             {
-                await InterceptResponse(res).ConfigureAwait(false);
+                res = await InterceptResponse(res).ConfigureAwait(false);
             }
 
             // Deserialize response.
