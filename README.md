@@ -21,3 +21,8 @@
 - 🔁 Fully asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
 - 💪 Strongly typed models.
 - 🛂 Tested based on full [statement coverage](https://en.wikipedia.org/wiki/Code_coverage#Basic_coverage_criteria) criteria.
+
+## 🙏 Related Work
+
+- [C# Kraken API](https://bitbucket.org/arrivets/krakenapi)
+- [C# Library to access the Kraken REST API](https://github.com/trenki2/KrakenApi)
