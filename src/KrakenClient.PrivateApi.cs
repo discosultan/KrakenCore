@@ -34,7 +34,8 @@ namespace KrakenCore
                 {
                     ["aclass"] = assetClass,
                     ["asset"] = asset
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -59,7 +60,8 @@ namespace KrakenCore
                 {
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
                     ["userref"] = userRef
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -100,7 +102,8 @@ namespace KrakenCore
                     ["end"] = end?.ToString(),
                     ["ofs"] = offset?.ToString(),
                     ["closetime"] = closeTime
-                });
+                }
+            );
         }
 
         /// <param name="transactionIds">
@@ -125,7 +128,8 @@ namespace KrakenCore
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
                     ["userref"] = userRef,
                     ["txid"] = transactionIds
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -160,7 +164,7 @@ namespace KrakenCore
             long? end = null,
             int? offset = null)
         {
-            return QueryPrivate<TradesHistory> (
+            return QueryPrivate<TradesHistory>(
                 "/0/private/TradesHistory",
                 new Dictionary<string, string>(5 + AdditionalPrivateQueryArgs)
                 {
@@ -169,7 +173,9 @@ namespace KrakenCore
                     ["start"] = start?.ToString(),
                     ["end"] = end?.ToString(),
                     ["ofs"] = offset?.ToString()
-                });
+                },
+                2
+            );
         }
 
         /// <param name="transactionIds">
@@ -191,7 +197,8 @@ namespace KrakenCore
                 {
                     ["trades"] = (includeTrades ?? false) ? "true" : "false",
                     ["txid"] = transactionIds
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -217,7 +224,8 @@ namespace KrakenCore
                 {
                     ["txid"] = transactionIds,
                     ["doCalculations"] = (doCalculations ?? false) ? "true" : "false"
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -262,7 +270,9 @@ namespace KrakenCore
                     ["start"] = start,
                     ["end"] = end,
                     ["ofs"] = offset
-                });
+                },
+                2
+            );
         }
 
         /// <param name="ids">Comma delimited list of ledger ids to query info about (20 maximum).</param>
@@ -276,7 +286,8 @@ namespace KrakenCore
                 new Dictionary<string, string>(1 + AdditionalPrivateQueryArgs)
                 {
                     ["id"] = ids
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -296,7 +307,8 @@ namespace KrakenCore
                 {
                     ["pair"] = pair,
                     ["fee-info"] = (includeFeeInfo ?? false) ? "true" : "false"
-                });
+                }
+            );
         }
 
         /// <summary>
@@ -399,7 +411,9 @@ namespace KrakenCore
                     ["expiretm"] = expireTime,
                     ["userref"] = userRef,
                     ["validate"] = (validate ?? false) ? "true" : "false"
-                });
+                },
+                0
+            );
         }
 
         /// <summary>
@@ -415,7 +429,9 @@ namespace KrakenCore
                 new Dictionary<string, string>(1 + AdditionalPrivateQueryArgs)
                 {
                     ["txid"] = transactionId
-                });
+                },
+                0
+            );
         }
     }
 }

@@ -208,14 +208,14 @@ namespace KrakenCore
             // Perform the HTTP request.
             HttpResponseMessage res = await _httpClient.SendAsync(req).ConfigureAwait(false);
 
+            // Throw for HTTP-level error.
+            res.EnsureSuccessStatusCode();
+
             // Allow interception of response by the consumer of this client.
             if (InterceptResponse != null)
             {
                 await InterceptResponse(res).ConfigureAwait(false);
             }
-
-            // Throw for HTTP-level error.
-            res.EnsureSuccessStatusCode();
 
             // Deserialize response.
             string jsonContent = await res.Content.ReadAsStringAsync().ConfigureAwait(false);

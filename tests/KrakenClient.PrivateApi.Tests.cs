@@ -1,4 +1,5 @@
 using KrakenCore.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,15 +33,10 @@ namespace KrakenCore.Tests
         {
             var res = await _client.GetTradeBalance();
 
-            //AssertNotDefault(res.Result.CostBasis);
             AssertNotDefault(res.Result.Equity);
             AssertNotDefault(res.Result.EquivalentBalance);
-            //AssertNotDefault(res.Result.FloatingValuation);
             AssertNotDefault(res.Result.FreeMargin);
-            //AssertNotDefault(res.Result.MarginAmount);
-            //AssertNotDefault(res.Result.MarginLevel);
             AssertNotDefault(res.Result.TradeBalance);
-            //AssertNotDefault(res.Result.UnrealizedProfitAndLoss);
         }
 
         [Fact]
@@ -53,9 +49,8 @@ namespace KrakenCore.Tests
             {
                 var order = orders.First();
                 AssertNotDefault(order.Key);
-                AssertNotDefault(order.Value.OpenTime);
+                AssertOrderInfo(order.Value);
                 Assert.Equal(OrderInfo.StatusOpen, order.Value.Status);
-                AssertOrderDescription(order.Value.Description);
             }
         }
 
@@ -69,16 +64,15 @@ namespace KrakenCore.Tests
                 AssertNotDefault(res.Result.Count);
                 var order = res.Result.Closed.First();
                 AssertNotDefault(order.Key);
+                AssertOrderInfo(order.Value);
                 AssertNotDefault(order.Value.CloseTime);
-                AssertNotDefault(order.Value.Status); // Can be either cancelled or closed.
-                AssertOrderDescription(order.Value.Description);
             }
         }
 
         [Fact]
         public async Task QueryOrdersInfo()
         {
-            string transactionId = await TryGetTransactionId();
+            string transactionId = await TryGetOrderId();
             if (transactionId == null) return;
 
             var res = await _client.QueryOrdersInfo(transactionId, true);
@@ -86,8 +80,7 @@ namespace KrakenCore.Tests
             var order = res.Result.First();
 
             AssertNotDefault(order.Key);
-            AssertNotDefault(order.Value.Status);
-            AssertOrderDescription(order.Value.Description);
+            AssertOrderInfo(order.Value);
         }
 
         [Fact]
@@ -107,7 +100,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task QueryTradesInfo()
         {
-            string transactionId = await TryGetTransactionId();
+            string transactionId = await TryGetTradeId();
             if (transactionId == null) return;
 
             var res = await _client.QueryTradesInfo(transactionId, true);
@@ -126,7 +119,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetOpenPositions()
         {
-            string transactionId = await TryGetTransactionId();
+            string transactionId = await TryGetTradeId();
             if (transactionId == null) return;
 
             var res = await _client.GetOpenPositions(transactionId, true);
@@ -195,13 +188,16 @@ namespace KrakenCore.Tests
             //var res = _client.CancelOpenOrder();
         }
 
-        private void AssertOrderDescription(OrderDescription desc)
+        private void AssertOrderInfo(OrderInfo orderInfo)
         {
-            AssertNotDefault(desc.Pair);
-            AssertNotDefault(desc.Type);
-            AssertNotDefault(desc.Price);
-            AssertNotDefault(desc.Leverage);
-            AssertNotDefault(desc.Order);
+            AssertNotDefault(orderInfo.Description.Pair);
+            AssertNotDefault(orderInfo.Description.Type);
+            AssertNotDefault(orderInfo.Description.Price);
+            AssertNotDefault(orderInfo.Description.Leverage);
+            AssertNotDefault(orderInfo.Description.Order);
+            AssertNotDefault(orderInfo.OpenTime);
+            AssertNotDefault(orderInfo.OrderFlags);
+            AssertNotDefault(orderInfo.Status);
         }
 
         private void AssertLedgerInfo(LedgerInfo ledgerInfo)
@@ -227,22 +223,35 @@ namespace KrakenCore.Tests
             AssertNotDefault(tradeInfo.Volume);
         }
 
-        private async Task<string> TryGetTransactionId()
+        private Task<string> TryGetOrderId()
+        {
+            return TryGetTransactionId(FirstOrderIdOrDefault);
+
+            string FirstOrderIdOrDefault(Dictionary<string, OrderInfo> orders)
+                => orders?.FirstOrDefault().Key;
+        }
+
+        private Task<string> TryGetTradeId()
+        {
+            return TryGetTransactionId(FirstTradeIdOrDefault);
+
+            string FirstTradeIdOrDefault(Dictionary<string, OrderInfo> orders)
+                => orders?.FirstOrDefault(x => x.Value.Trades?.Any() ?? false).Value.Trades.First();
+        }
+
+        private async Task<string> TryGetTransactionId(Func<Dictionary<string, OrderInfo>, string> selector)
         {
             // We try to get a transaction id from closed orders first. If none found, try from open
             // orders. These must be called sequentially to ensure nonce is received sequentially by
             // the API.
 
             var closedOrders = await _client.GetClosedOrders(true);
-            string result = FirstTradeIdOrDefault(closedOrders.Result.Closed);
+            string result = selector(closedOrders.Result.Closed);
 
             if (result != null) return result;
 
             var openOrders = await _client.GetOpenOrders(true);
-            return FirstTradeIdOrDefault(openOrders.Result.Open);
-
-            string FirstTradeIdOrDefault(Dictionary<string, OrderInfo> orders)
-                => orders?.FirstOrDefault(x => x.Value.Trades?.Any() ?? false).Value.Trades.First();
+            return selector(openOrders.Result.Open);
         }
 
         private async Task<string> TryGetLedgerId()
