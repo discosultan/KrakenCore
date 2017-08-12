@@ -1,5 +1,3 @@
-> WIP
-
 <h1 align="center">KrakenCore</h1>
 
 <h4 align="center">Async HTTP client for the Kraken bitcoin exchange API.</h4>
