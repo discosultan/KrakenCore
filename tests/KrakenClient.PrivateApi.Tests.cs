@@ -7,14 +7,9 @@ using Xunit;
 
 namespace KrakenCore.Tests
 {
-    // These tests DO NOT perform any monetary transactions! Add standard order call is only made in
-    // validation mode.
-    //
-    // When testing for private API, there are a couple of prerequisites that need
-    // to be met for the account under test:
-    //
-    // * At least one currency must be available on the balance
-    // * At least one transaction must be made
+    // These tests DO NOT perform any monetary transactions!
+    // - Add standard order is tested only in validation mode
+    // - For cancel open order, only failing path is tested
 
     public partial class KrakenClientTests
     {
@@ -23,14 +18,20 @@ namespace KrakenCore.Tests
         {
             var res = await _client.GetAccountBalance();
 
-            var balance = res.Result.First();
-            AssertNotDefault(balance.Key);
-            AssertNotDefault(balance.Value);
+            if (res.Result.Any())
+            {
+                var balance = res.Result.First();
+                AssertNotDefault(balance.Key);
+                AssertNotDefault(balance.Value);
+            }
         }
 
         [Fact]
         public async Task GetTradeBalance()
         {
+            // Note that this test may fail with an internal server error when using an account with
+            // empty balance. This seems to be a bug on Kraken side.
+
             var res = await _client.GetTradeBalance();
 
             AssertNotDefault(res.Result.Equity);
@@ -167,7 +168,9 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetTradeVolume()
         {
-            var res = await _client.GetTradeVolume(DefaultPair, includeFeeInfo: true);
+            // "fee-info" param does not seem to be respected on Kraken's side. Not sure if bug ...
+
+            var res = await _client.GetTradeVolume(DefaultPair, includeFeeInfo: false);
 
             AssertNotDefault(res.Result.Currency);
         }
@@ -175,17 +178,33 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task AddStandardOrder()
         {
-            //var res = await _client.AddStandardOrder(
-            //    DefaultPair,
-            //    "buy",
-            //    "market",
-            //    validate: true);
+            // Minimum volume to trade is 5 USD worth of currency.
+            var res = await _client.AddStandardOrder(
+                DefaultPair,
+                "buy",
+                "market",
+                volume: 0.1m,
+                validate: true);
+
+            AssertNotDefault(res.Result.Description.Order);
         }
 
         [Fact]
-        public async Task CancelOpenOrder()
+        public async Task CancelOpenOrder_InvalidTransactionId()
         {
-            //var res = _client.CancelOpenOrder();
+            // We only test failing path because testing a success path requires an actual monetary
+            // open order to be present.
+            try
+            {
+                await _client.CancelOpenOrder("invalid-order-id");
+                Assert.True(false); // Fail.
+            }
+            catch (KrakenException ex)
+            {
+                var firstError = ex.Errors.First();
+                Assert.Equal(ErrorString.SeverityCodeError, firstError.SeverityCode);
+                Assert.Equal(ErrorString.ErrorCategoryOrder, firstError.ErrorCategory);
+            }
         }
 
         private void AssertOrderInfo(OrderInfo orderInfo)
@@ -236,7 +255,7 @@ namespace KrakenCore.Tests
             return TryGetTransactionId(FirstTradeIdOrDefault);
 
             string FirstTradeIdOrDefault(Dictionary<string, OrderInfo> orders)
-                => orders?.FirstOrDefault(x => x.Value.Trades?.Any() ?? false).Value.Trades.First();
+                => orders?.FirstOrDefault(x => x.Value.Trades?.Any() ?? false).Value?.Trades.First();
         }
 
         private async Task<string> TryGetTransactionId(Func<Dictionary<string, OrderInfo>, string> selector)

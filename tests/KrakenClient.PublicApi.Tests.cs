@@ -51,7 +51,7 @@ namespace KrakenCore.Tests
         {
             try
             {
-                await _client.GetAssetInfo(assetClass: "invalid");
+                await _client.GetAssetInfo(assetClass: "invalid-asset-class");
                 Assert.True(false); // Fail.
             }
             catch (KrakenException ex)

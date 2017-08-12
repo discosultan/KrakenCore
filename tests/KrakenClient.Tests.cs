@@ -61,7 +61,7 @@ namespace KrakenCore.Tests
                 ErrorsAsExceptions = true,
                 WarningsAsExceptions = true,
                 // If the API key has two factor password enabled, set the line below to return it.
-                //GetTwoFactorPassword = () => "<PASSWORD>"
+                //GetTwoFactorPassword = () => Task.FromResult("<PASSWORD>")
             };
         }
 

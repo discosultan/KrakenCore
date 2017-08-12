@@ -52,13 +52,13 @@ namespace KrakenCore
         /// <returns>Dictionary of order info in open array with txid as the key.</returns>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<OpenOrders>> GetOpenOrders(bool? includeTrades = null, string userRef = null)
+        public Task<KrakenResponse<OpenOrders>> GetOpenOrders(bool includeTrades = false, string userRef = null)
         {
             return QueryPrivate<OpenOrders>(
                 "/0/private/OpenOrders",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
-                    ["trades"] = (includeTrades ?? false) ? "true" : "false",
+                    ["trades"] = includeTrades ? "true" : null,
                     ["userref"] = userRef
                 }
             );
@@ -85,7 +85,7 @@ namespace KrakenCore
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<ClosedOrders>> GetClosedOrders(
-            bool? includeTrades = null,
+            bool includeTrades = false,
             string userRef = null,
             long? start = null,
             long? end = null,
@@ -96,7 +96,7 @@ namespace KrakenCore
                 "/0/private/ClosedOrders",
                 new Dictionary<string, string>(6 + AdditionalPrivateQueryArgs)
                 {
-                    ["trades"] = (includeTrades ?? false) ? "true" : "false",
+                    ["trades"] = includeTrades ? "true" : null,
                     ["userref"] = userRef,
                     ["start"] = start?.ToString(),
                     ["end"] = end?.ToString(),
@@ -118,14 +118,14 @@ namespace KrakenCore
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, OrderInfo>>> QueryOrdersInfo(
             string transactionIds,
-            bool? includeTrades = null,
+            bool includeTrades = false,
             string userRef = null)
         {
             return QueryPrivate<Dictionary<string, OrderInfo>>(
                 "/0/private/QueryOrders",
                 new Dictionary<string, string>(3 + AdditionalPrivateQueryArgs)
                 {
-                    ["trades"] = (includeTrades ?? false) ? "true" : "false",
+                    ["trades"] = includeTrades ? "true" : null,
                     ["userref"] = userRef,
                     ["txid"] = transactionIds
                 }
@@ -159,7 +159,7 @@ namespace KrakenCore
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<TradesHistory>> GetTradesHistory(
             string type = null,
-            bool? includeTrades = null,
+            bool includeTrades = false,
             long? start = null,
             long? end = null,
             int? offset = null)
@@ -169,7 +169,7 @@ namespace KrakenCore
                 new Dictionary<string, string>(5 + AdditionalPrivateQueryArgs)
                 {
                     ["type"] = type,
-                    ["trades"] = (includeTrades ?? false) ? "true" : "false",
+                    ["trades"] = includeTrades ? "true" : null,
                     ["start"] = start?.ToString(),
                     ["end"] = end?.ToString(),
                     ["ofs"] = offset?.ToString()
@@ -189,13 +189,13 @@ namespace KrakenCore
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, TradeInfo>>> QueryTradesInfo(
             string transactionIds,
-            bool? includeTrades = null)
+            bool includeTrades = false)
         {
             return QueryPrivate<Dictionary<string, TradeInfo>>(
                 "/0/private/QueryTrades",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
-                    ["trades"] = (includeTrades ?? false) ? "true" : "false",
+                    ["trades"] = includeTrades ? "true" : null,
                     ["txid"] = transactionIds
                 }
             );
@@ -216,14 +216,14 @@ namespace KrakenCore
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
         public Task<KrakenResponse<Dictionary<string, PositionInfo>>> GetOpenPositions(
             string transactionIds,
-            bool? doCalculations = null)
+            bool doCalculations = false)
         {
             return QueryPrivate<Dictionary<string, PositionInfo>>(
                 "/0/private/OpenPositions",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
                     ["txid"] = transactionIds,
-                    ["doCalculations"] = (doCalculations ?? false) ? "true" : "false"
+                    ["docalcs"] = doCalculations ? "true" : null
                 }
             );
         }
@@ -299,14 +299,14 @@ namespace KrakenCore
         /// <param name="includeFeeInfo">Whether or not to include fee info in results (optional).</param>
         /// <exception cref="HttpRequestException">There was a problem with the HTTP request.</exception>
         /// <exception cref="KrakenException">There was a problem with the Kraken API call.</exception>
-        public Task<KrakenResponse<TradeVolume>> GetTradeVolume(string pair = null, bool? includeFeeInfo = null)
+        public Task<KrakenResponse<TradeVolume>> GetTradeVolume(string pair = null, bool includeFeeInfo = false)
         {
             return QueryPrivate<TradeVolume>(
                 "/0/private/TradeVolume",
                 new Dictionary<string, string>(2 + AdditionalPrivateQueryArgs)
                 {
                     ["pair"] = pair,
-                    ["fee-info"] = (includeFeeInfo ?? false) ? "true" : "false"
+                    ["fee-info"] = includeFeeInfo ? "true" : null
                 }
             );
         }
@@ -353,9 +353,9 @@ namespace KrakenCore
         /// <para>stop-loss-and-limit (price = stop loss price, price2 = limit price)</para>
         /// <para>settle-position</para>
         /// </param>
+        /// <param name="volume">Order volume in lots.</param>
         /// <param name="price">Price (optional. dependent upon <paramref name="orderType"/>).</param>
         /// <param name="price2">Secondary price (optional. dependent upon <paramref name="orderType"/>).</param>
-        /// <param name="volume">Order volume in lots.</param>
         /// <param name="leverage">Amount of leverage desired (optional. default = none).</param>
         /// <param name="orderFlags">
         /// Comma delimited list of order flags (optional):
@@ -385,15 +385,15 @@ namespace KrakenCore
             string pair,
             string type,
             string orderType,
+            decimal volume,
             decimal? price = null,
             decimal? price2 = null,
-            decimal? volume = null, // TODO: validate if optional
             string leverage = null,
             string orderFlags = null,
             string startTime = null,
             string expireTime = null,
             string userRef = null,
-            bool? validate = null)
+            bool validate = false)
         {
             return QueryPrivate<AddOrderResult>(
                 "/0/private/AddOrder",
@@ -404,13 +404,13 @@ namespace KrakenCore
                     ["ordertype"] = orderType,
                     ["price"] = price?.ToString(),
                     ["price2"] = price2?.ToString(),
-                    ["volume"] = volume?.ToString(),
+                    ["volume"] = volume.ToString(),
                     ["leverage"] = leverage,
                     ["oflags"] = orderFlags,
                     ["starttm"] = startTime,
                     ["expiretm"] = expireTime,
                     ["userref"] = userRef,
-                    ["validate"] = (validate ?? false) ? "true" : "false"
+                    ["validate"] = validate ? "true" : null
                 },
                 0
             );
