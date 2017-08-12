@@ -17,4 +17,4 @@ dotnet: 1.0.4
 script:
   - ulimit -n 4096
   - dotnet restore
-  - dotnet test
+  - dotnet build
