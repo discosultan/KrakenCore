@@ -15,7 +15,7 @@
 </p>
 
 ## 🎉 Features
-- &nbsp;✖&nbsp; Cross-platform based on [.NET Standard 1.6](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
+- &nbsp;✖ Cross-platform based on [.NET Standard 1.6](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
 - 🔁 Asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async)
 - 💪 Strongly typed models
 - 🛂 Covered with tests
