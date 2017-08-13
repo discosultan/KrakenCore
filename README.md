@@ -1,6 +1,6 @@
 <h1 align="center">KrakenCore</h1>
 
-<h4 align="center">Async HTTP client for the Kraken bitcoin exchange API.</h4>
+<h4 align="center">.NET client for <a href="https://www.kraken.com/">Kraken bitcoin exchange API</a></h4>
 
 <p align="center">
     <a href="https://www.nuget.org/packages/KrakenCore">
@@ -15,10 +15,30 @@
 </p>
 
 ## 🎉 Features
-- ❌ Cross-platform based on [.NET Standard 1.6](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
-- 🔁 Fully asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
-- 💪 Strongly typed models.
-- 🛂 Tested based on full [statement coverage](https://en.wikipedia.org/wiki/Code_coverage#Basic_coverage_criteria) criteria.
+- &nbsp;✖&nbsp; Cross-platform based on [.NET Standard 1.6](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
+- 🔁 Asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async)
+- 💪 Strongly typed models
+- 🛂 Covered with tests
+- &nbsp;✋ Supports API rate limiter
+- 🔐 Supports two-factor authentication
+
+## 📦 Getting Started
+
+```csharp
+using KrakenCore;
+```
+
+```csharp
+var client = new KrakenClient(apiKey, privateKey);
+
+var response = await client.GetAccountBalance();
+foreach (var currency in response.Result)
+    Console.WriteLine($"{currency.Key} : {currency.Value}");
+
+// ZEUR : 1000
+// XXBT : 1
+// XETH : 3
+```
 
 ## 🙏 Related Work
 
