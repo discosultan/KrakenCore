@@ -1,4 +1,4 @@
-﻿using KrakenCore.Utils;
+using KrakenCore.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace KrakenCore
 {
     /// <summary>
-    /// A strongly typed async http client for Kraken bitcoin exchange API.
+    /// A strongly typed async HTTP client for Kraken bitcoin exchange API.
     /// <para>https://www.kraken.com/help/api</para>
     /// </summary>
     public partial class KrakenClient : IDisposable
@@ -50,7 +50,7 @@ namespace KrakenCore
         /// <param name="apiKey">Key required to make private queries to the API.</param>
         /// <param name="privateKey">Secret required to sign private messages.</param>
         /// <param name="rateLimit">
-        /// Used to enable API call rate limiter conforming to Kraken rules. To disable, use <see cref="KrakenCore.RateLimit.None"/>.
+        /// Used to enable API call rate limiter conforming to Kraken rules. To disable, use <see cref="RateLimit.None"/>.
         /// </param>
         public KrakenClient(
             string apiKey,
@@ -73,40 +73,68 @@ namespace KrakenCore
             _sha512PrivateKey = new HMACSHA512(Convert.FromBase64String(privateKey));
         }
 
+        /// <summary>
+        /// Gets the API key used for private requests.
+        /// </summary>
         public string ApiKey { get; }
 
+        /// <summary>
+        /// Gets the private key aka secret used to sign private requests.
+        /// </summary>
         public string PrivateKey { get; }
 
+        /// <summary>
+        /// Gets the rate limit applied for this client.
+        /// </summary>
         public RateLimit RateLimit { get; }
 
+        /// <summary>
+        /// Gets or sets the base address of Uniform Resource Identifier (URI) of the Kraken API used
+        /// when sending requests (default = https://api.kraken.com).
+        /// </summary>
         public Uri BaseAddress
         {
             get => _httpClient.BaseAddress;
             set => _httpClient.BaseAddress = value;
         }
 
+        /// <summary>
+        /// Gets the additional headers which should be sent with each request (default = empty).
+        /// </summary>
         public HttpRequestHeaders DefaultHeaders => _httpClient.DefaultRequestHeaders;
 
+        /// <summary>
+        /// Gets or sets if error strings returned by Kraken should raise exceptions (default = true).
+        /// </summary>
         public bool ErrorsAsExceptions { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets if warning strings returned by Kraken should raise exceptions (default = false).
+        /// </summary>
         public bool WarningsAsExceptions { get; set; }
 
         /// <summary>
-        /// Gets or sets the getter function for a nonce.
+        /// Gets or sets the getter function for a nonce (default = <c>DateTime.UtcNow.Ticks</c>).
         /// <para>API expects an increasing value for each request.</para>
-        /// <para>By default uses <c>DateTime.UtcNow.Ticks</c>.</para>
         /// </summary>
         public Func<Task<long>> GetNonce { get; set; } = () => Task.FromResult(DateTime.UtcNow.Ticks);
 
         /// <summary>
-        /// Gets or sets the getter function for a two-factor password.
+        /// Gets or sets the getter function for a two-factor password (default = null).
         /// <para>Set to <c>null</c> to disable.</para>
-        /// <para>By default disabled.</para>
         /// </summary>
         public Func<Task<string>> GetTwoFactorPassword { get; set; } // Nullable
 
+        /// <summary>
+        /// Gets or sets request interceptor prior to dispatching it (default = null).
+        /// <para>Can be used to log or modify the request, for example.</para>
+        /// </summary>
         public Func<HttpRequestMessage, Task<HttpRequestMessage>> InterceptRequest { get; set; } // Nullable
 
+        /// <summary>
+        /// Gets or sets response interceptor after receiving it (default = null).
+        /// <para>Can be used to log or modify the response, for example.</para>
+        /// </summary>
         public Func<HttpResponseMessage, Task<HttpResponseMessage>> InterceptResponse { get; set; } // Nullable
 
         /// <summary>
