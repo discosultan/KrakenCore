@@ -1,21 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>discosultan</Authors>
-    <Company />
     <Description>Client for Kraken bitcoin exchange API.</Description>
     <PackageLicenseUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/discosultan/KrakenCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/discosultan/KrakenCore</RepositoryUrl>
-    <PackageReleaseNotes>Nuget logo added.</PackageReleaseNotes>
-    <Version>1.0.0-alpha02</Version>
+    <PackageReleaseNotes>Updated to .NET Standard 2.0.</PackageReleaseNotes>
+    <Version>1.0.0-alpha03</Version>
     <PackageIconUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/KrakenLogo.png</PackageIconUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard1.6\KrakenCore.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\KrakenCore.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.6\KrakenCore.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\KrakenCore.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
