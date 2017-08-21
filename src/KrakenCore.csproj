@@ -6,8 +6,8 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/discosultan/KrakenCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/discosultan/KrakenCore</RepositoryUrl>
-    <PackageReleaseNotes>Updated to .NET Standard 2.0.</PackageReleaseNotes>
-    <Version>1.0.0-alpha03</Version>
+    <PackageReleaseNotes>Fixed ErrorString deserialization.</PackageReleaseNotes>
+    <Version>1.0.0-alpha04</Version>
     <PackageIconUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/KrakenLogo.png</PackageIconUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

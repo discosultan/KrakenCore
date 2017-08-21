@@ -1,19 +1,8 @@
-﻿using KrakenCore.Utils;
+using KrakenCore.Utils;
 using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
-    //[JsonConverter(typeof(TimestampedPairResultConverter<Ohlc>))]
-    //public class OhlcData
-    //{
-    //    public Ohlc[] Values { get; set; }
-
-    //    /// <summary>
-    //    /// Id to be used as since when polling for new, committed OHLC data.
-    //    /// </summary>
-    //    public long Last { get; set; }
-    //}
-
     [JsonConverter(typeof(JArrayToObjectConverter))]
     public class Ohlc
     {

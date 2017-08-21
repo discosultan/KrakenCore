@@ -102,5 +102,11 @@ namespace KrakenCore
         /// <param name="error">String to validate.</param>
         /// <returns><c>true</c> if conforms; otherwise <c>false</c>.</returns>
         public static bool IsValid(string error) => Regex.IsMatch(error, Format);
+
+        /// <summary>
+        /// Explicitly converts a <see cref="string"/> to an <see cref="ErrorString"/>.
+        /// </summary>
+        /// <param name="error">Instance to convert.</param>
+        public static explicit operator ErrorString(string error) => new ErrorString(error);
     }
 }
