@@ -14,6 +14,8 @@
     </a>
 </p>
 
+> ⚠ This is an alpha version, meaning the API has not been tested on any production application. USE AT OWN RISK! Also, the API does not include the [tentative private user funding API](https://www.kraken.com/help/api#private-user-funding) as it is subject to change.
+
 ## 🎉 Features
 - &nbsp;✖ Cross-platform based on [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
 - 🔁 Asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async)
