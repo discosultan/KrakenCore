@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>discosultan</Authors>
@@ -9,15 +10,19 @@
     <PackageReleaseNotes>Fixed ErrorString deserialization.</PackageReleaseNotes>
     <Version>1.0.0-alpha04</Version>
     <PackageIconUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/KrakenLogo.png</PackageIconUrl>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\KrakenCore.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+
+  <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\KrakenCore.xml</DocumentationFile>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\KrakenCore.xml</DocumentationFile>
-  </PropertyGroup>
+  </PropertyGroup> -->
+
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
+
 </Project>
