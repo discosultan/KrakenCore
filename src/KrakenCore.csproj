@@ -3,23 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>discosultan</Authors>
+    <Version>1.0.0-alpha04</Version>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\KrakenCore.xml</DocumentationFile>
     <Description>Client for Kraken bitcoin exchange API.</Description>
     <PackageLicenseUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/discosultan/KrakenCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/discosultan/KrakenCore</RepositoryUrl>
     <PackageReleaseNotes>Fixed ErrorString deserialization.</PackageReleaseNotes>
-    <Version>1.0.0-alpha04</Version>
     <PackageIconUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/KrakenLogo.png</PackageIconUrl>
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\KrakenCore.xml</DocumentationFile>
   </PropertyGroup>
-
-  <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\KrakenCore.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\KrakenCore.xml</DocumentationFile>
-  </PropertyGroup> -->
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
