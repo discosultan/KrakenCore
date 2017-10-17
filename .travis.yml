@@ -4,12 +4,10 @@ os:
   - osx
   - linux
 
-# .NET CLI requires Ubuntu 14.04.
 sudo: required
-dist: trusty
+dist: trusty # Ubuntu 14.04
 
-# .NET CLI requires OSX 10.10.
-osx_image: xcode8.3
+osx_image: xcode9.1 # OS X 10.12
 
 mono: none
 dotnet: 2.0.0
