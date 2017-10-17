@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,13 +20,21 @@ namespace KrakenCore
     /// </summary>
     public partial class KrakenClient : IDisposable
     {
+        /// <summary>
+        /// Dummy API Key that can be used to access only Kraken public API.
+        /// </summary>
         public const string DummyApiKey = "00000000000000000000000000000000000000000000000000000000";
+        /// <summary>
+        /// Dummy Private Key that can be used to access only Kraken public API.
+        /// </summary>
         public const string DummyPrivateKey = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
         internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
         };
+
+        private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
         private static readonly Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>(0);
 
@@ -201,7 +210,7 @@ namespace KrakenCore
             string nonce = null;
             if (GetNonce != null)
             {
-                nonce = (await GetNonce().ConfigureAwait(false)).ToString();
+                nonce = (await GetNonce().ConfigureAwait(false)).ToString(Culture);
                 args["nonce"] = nonce;
             }
             if (GetTwoFactorPassword != null)

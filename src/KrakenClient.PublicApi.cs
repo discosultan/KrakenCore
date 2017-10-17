@@ -1,4 +1,4 @@
-﻿using KrakenCore.Models;
+using KrakenCore.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -112,8 +112,8 @@ namespace KrakenCore
                 new Dictionary<string, string>(3)
                 {
                     ["pair"] = pair,
-                    ["interval"] = interval?.ToString(),
-                    ["since"] = since?.ToString()
+                    ["interval"] = interval?.ToString(Culture),
+                    ["since"] = since?.ToString(Culture)
                 }
             );
         }
@@ -130,7 +130,7 @@ namespace KrakenCore
                 new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["count"] = count?.ToString()
+                    ["count"] = count?.ToString(Culture)
                 }
             );
         }
@@ -147,7 +147,7 @@ namespace KrakenCore
                 new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["since"] = since?.ToString()
+                    ["since"] = since?.ToString(Culture)
                 }
             );
         }
@@ -168,7 +168,7 @@ namespace KrakenCore
                 new Dictionary<string, string>(2)
                 {
                     ["pair"] = pair,
-                    ["since"] = since?.ToString()
+                    ["since"] = since?.ToString(Culture)
                 }
             );
         }

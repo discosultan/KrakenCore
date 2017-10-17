@@ -98,9 +98,9 @@ namespace KrakenCore
                 {
                     ["trades"] = includeTrades ? "true" : null,
                     ["userref"] = userRef,
-                    ["start"] = start?.ToString(),
-                    ["end"] = end?.ToString(),
-                    ["ofs"] = offset?.ToString(),
+                    ["start"] = start?.ToString(Culture),
+                    ["end"] = end?.ToString(Culture),
+                    ["ofs"] = offset?.ToString(Culture),
                     ["closetime"] = closeTime
                 }
             );
@@ -170,9 +170,9 @@ namespace KrakenCore
                 {
                     ["type"] = type,
                     ["trades"] = includeTrades ? "true" : null,
-                    ["start"] = start?.ToString(),
-                    ["end"] = end?.ToString(),
-                    ["ofs"] = offset?.ToString()
+                    ["start"] = start?.ToString(Culture),
+                    ["end"] = end?.ToString(Culture),
+                    ["ofs"] = offset?.ToString(Culture)
                 },
                 2
             );
@@ -402,9 +402,9 @@ namespace KrakenCore
                     ["pair"] = pair,
                     ["type"] = type,
                     ["ordertype"] = orderType,
-                    ["price"] = price?.ToString(),
-                    ["price2"] = price2?.ToString(),
-                    ["volume"] = volume.ToString(),
+                    ["price"] = price?.ToString(Culture),
+                    ["price2"] = price2?.ToString(Culture),
+                    ["volume"] = volume.ToString(Culture),
                     ["leverage"] = leverage,
                     ["oflags"] = orderFlags,
                     ["starttm"] = startTime,
