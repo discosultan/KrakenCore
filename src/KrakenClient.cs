@@ -19,6 +19,9 @@ namespace KrakenCore
     /// </summary>
     public partial class KrakenClient : IDisposable
     {
+        public const string DummyApiKey = "00000000000000000000000000000000000000000000000000000000";
+        public const string DummyPrivateKey = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
         internal static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
@@ -47,8 +50,14 @@ namespace KrakenCore
         /// <summary>
         /// Initializes a new instance of the <see cref="KrakenClient"/> class.
         /// </summary>
-        /// <param name="apiKey">Key required to make private queries to the API.</param>
-        /// <param name="privateKey">Secret required to sign private messages.</param>
+        /// <param name="apiKey">
+        /// Key required to make private queries to the API. Use <see cref="DummyApiKey"/> if only
+        /// use public API is used.
+        /// </param>
+        /// <param name="privateKey">
+        /// Secret required to sign private messages. Use <see cref="DummyPrivateKey"/> if only
+        /// public API is used.
+        /// </param>
         /// <param name="rateLimit">
         /// Used to enable API call rate limiter conforming to Kraken rules. To disable, use <see cref="RateLimit.None"/>.
         /// </param>

@@ -1,4 +1,3 @@
-﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,7 +7,37 @@ using Xunit.Abstractions;
 
 namespace KrakenCore.Tests
 {
-    [TestCaseOrderer("KrakenCore.Tests.Utils.PriorityOrderer", "KrakenCore.Tests")]
+    // Share the Kraken client between tests in order to respect API rate limits.
+    public class KrakenFixture : IDisposable
+    {
+        public const string ApiKey = "<INSERT_API_KEY>";
+        public const string PrivateKey = "<INSERT_PRIVATE_KEY>";
+        public const RateLimit ApiRateLimit = RateLimit.Tier2;
+
+        public KrakenFixture()
+        {
+            if (ApiKey.Length != KrakenClient.DummyApiKey.Length ||
+                PrivateKey.Length != KrakenClient.DummyPrivateKey.Length)
+            {
+                throw new InvalidOperationException(
+$@"Please configure {nameof(ApiKey)} and {nameof(PrivateKey)} in {nameof(KrakenFixture)}!
+Use {nameof(KrakenClient)}.{nameof(KrakenClient.DummyApiKey)} and {nameof(KrakenClient)}.{nameof(KrakenClient.DummyPrivateKey)} to test only public API.");
+            }
+
+            Client = new KrakenClient(ApiKey, PrivateKey, ApiRateLimit)
+            {
+                ErrorsAsExceptions = true,
+                WarningsAsExceptions = true,
+                // If the API key has two factor password enabled, set the line below to return it.
+                //GetTwoFactorPassword = () => Task.FromResult("<INSERT_PASSWORD>")
+            };
+        }
+
+        public KrakenClient Client { get; }
+
+        public void Dispose() => Client.Dispose();
+    }
+
     public partial class KrakenClientTests : IClassFixture<KrakenFixture>
     {
         private readonly KrakenClient _client;
@@ -39,34 +68,5 @@ namespace KrakenCore.Tests
 
         [DebuggerStepThrough]
         private void AssertNotDefault<T>(T value) => Assert.NotEqual(default(T), value);
-    }
-
-    // Share the Kraken client between tests in order to respect API rate limits.
-    public class KrakenFixture : IDisposable
-    {
-        public KrakenFixture()
-        {
-            var configBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-            IConfigurationRoot config = configBuilder.Build();
-
-            string apiKey = config["ApiKey"];
-
-            string privateKey = config["PrivateKey"];
-
-            if (!Enum.TryParse(config["RateLimit"], out RateLimit rateLimit))
-                rateLimit = RateLimit.None;
-
-            Client = new KrakenClient(apiKey, privateKey, rateLimit)
-            {
-                ErrorsAsExceptions = true,
-                WarningsAsExceptions = true,
-                // If the API key has two factor password enabled, set the line below to return it.
-                //GetTwoFactorPassword = () => Task.FromResult("<PASSWORD>")
-            };
-        }
-
-        public KrakenClient Client { get; }
-
-        public void Dispose() => Client.Dispose();
     }
 }

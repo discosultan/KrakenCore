@@ -1,4 +1,4 @@
-﻿using KrakenCore.Utils;
+using KrakenCore.Utils;
 using System;
 using System.Threading.Tasks;
 using Xunit;
