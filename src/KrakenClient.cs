@@ -183,7 +183,7 @@ namespace KrakenCore
             };
 
             // Send request and deserialize response.
-            return await SendRequest<T>(req, _publicApiRateLimiter, 1).ConfigureAwait(false);
+            return await SendRequest<T>(req, _publicApiRateLimiter, apiCallCost).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace KrakenCore
             req.Headers.Add("API-Sign", Convert.ToBase64String(signature));
 
             // Send request and deserialize response.
-            return await SendRequest<T>(req, _privateApiRateLimiter, 1).ConfigureAwait(false);
+            return await SendRequest<T>(req, _privateApiRateLimiter, apiCallCost).ConfigureAwait(false);
         }
 
         /// <summary>
