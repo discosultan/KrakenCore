@@ -19,5 +19,10 @@ namespace KrakenCore
         /// Gets or sets the result of a request.
         /// </summary>
         public T Result { get; set; } // Nullable
+
+        /// <summary>
+        /// Gets or sets the raw Json result of a request.
+        /// </summary>
+        public string RawJson { get; set; }
     }
 }

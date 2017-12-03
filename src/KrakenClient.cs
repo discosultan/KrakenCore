@@ -278,6 +278,7 @@ namespace KrakenCore
             // Deserialize response.
             string jsonContent = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             var result = JsonConvert.DeserializeObject<KrakenResponse<T>>(jsonContent, JsonSettings);
+            result.RawJson = jsonContent;
 
             // Throw for API-level error and warning if configured.
             if (result.Errors.Any(x =>
