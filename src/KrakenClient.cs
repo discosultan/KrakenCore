@@ -256,7 +256,7 @@ namespace KrakenCore
 
         private static string UrlEncode(Dictionary<string, string> args) => string.Join(
             "&",
-            args.Where(x => x.Value != null).Select(x => x.Key + "=" + x.Value)
+            args.Where(x => x.Value != null).Select(x => x.Key + "=" + WebUtility.UrlEncode(x.Value))
         );
     }
 }

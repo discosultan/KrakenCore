@@ -122,6 +122,8 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetOrderBook()
         {
+            // Note, this can fail if the order book does not have any ask or bid orders for the pair.
+
             var res = await Client.GetOrderBook(DefaultPair);
 
             var orderBook = res.Result.First();

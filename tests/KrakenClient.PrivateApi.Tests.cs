@@ -190,6 +190,7 @@ namespace KrakenCore.Tests
                 "buy",
                 "market",
                 volume: 0.1m,
+                expireTime: "+60",
                 validate: true);
 
             AssertNotDefault(res.Result.Description.Order);
