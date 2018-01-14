@@ -45,7 +45,7 @@ foreach (var currency in response.Result)
 
 The client supports two extensibility points: one right before a request to Kraken is dispatched and one right after a response is received. These points provide additional context specific information (for example, the cost of a particular call) and can be used to implement features such as rate limiting or logging.
 
-Sample extensions implemented in the test suite:
+Sample extensions implemented in [the test suite](https://github.com/discosultan/KrakenCore/blob/6147afa9f7c6ba6ca38c2dee65102594cacb6fe6/tests/KrakenClient.Tests.cs#L46-L67):
 
 ```csharp
 var client = new KrakenClient(ApiKey, PrivateKey)
