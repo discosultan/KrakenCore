@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace KrakenCore.Tests
 {
@@ -11,12 +12,17 @@ namespace KrakenCore.Tests
     // - Add standard order is tested only in validation mode
     // - For cancel open order, only failing path is tested
 
-    public partial class KrakenClientTests
+    public class KrakenClientPrivateApiTests : KrakenClientTests
     {
+        public KrakenClientPrivateApiTests(ITestOutputHelper output, KrakenFixture fixture)
+            : base(output, fixture)
+        {
+        }
+
         [Fact]
         public async Task GetAccountBalance()
         {
-            var res = await _client.GetAccountBalance();
+            var res = await Client.GetAccountBalance();
 
             if (res.Result.Any())
             {
@@ -32,7 +38,7 @@ namespace KrakenCore.Tests
             // Note that this test may fail with an internal server error when using an account with
             // empty balance. This seems to be a bug on Kraken side.
 
-            var res = await _client.GetTradeBalance();
+            var res = await Client.GetTradeBalance();
 
             AssertNotDefault(res.Result.Equity);
             AssertNotDefault(res.Result.EquivalentBalance);
@@ -43,7 +49,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetOpenOrders()
         {
-            var res = await _client.GetOpenOrders(true);
+            var res = await Client.GetOpenOrders(true);
 
             var orders = res.Result.Open;
             if (orders.Any())
@@ -58,7 +64,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetClosedOrders()
         {
-            var res = await _client.GetClosedOrders(true);
+            var res = await Client.GetClosedOrders(true);
 
             if (res.Result.Closed.Any())
             {
@@ -76,7 +82,7 @@ namespace KrakenCore.Tests
             string transactionId = await TryGetOrderId();
             if (transactionId == null) return;
 
-            var res = await _client.QueryOrdersInfo(transactionId, true);
+            var res = await Client.QueryOrdersInfo(transactionId, true);
 
             var order = res.Result.First();
 
@@ -87,7 +93,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetTradesHistory()
         {
-            var res = await _client.GetTradesHistory(includeTrades: true);
+            var res = await Client.GetTradesHistory(includeTrades: true);
 
             if (res.Result.Trades.Any())
             {
@@ -104,7 +110,7 @@ namespace KrakenCore.Tests
             string transactionId = await TryGetTradeId();
             if (transactionId == null) return;
 
-            var res = await _client.QueryTradesInfo(transactionId, true);
+            var res = await Client.QueryTradesInfo(transactionId, true);
 
             var tradesInfo = res.Result.First(x => x.Key == transactionId).Value;
             AssertNotDefault(tradesInfo.OrderTransactionId);
@@ -123,7 +129,7 @@ namespace KrakenCore.Tests
             string transactionId = await TryGetTradeId();
             if (transactionId == null) return;
 
-            var res = await _client.GetOpenPositions(transactionId, true);
+            var res = await Client.GetOpenPositions(transactionId, true);
 
             var openPosition = res.Result.FirstOrDefault(x => x.Key == transactionId).Value;
             if (openPosition != null)
@@ -143,7 +149,7 @@ namespace KrakenCore.Tests
         [Fact]
         public async Task GetLedgersInfo()
         {
-            var res = await _client.GetLedgersInfo();
+            var res = await Client.GetLedgersInfo();
 
             if (res.Result.Ledgers.Any())
             {
@@ -159,7 +165,7 @@ namespace KrakenCore.Tests
             string ledgerId = await TryGetLedgerId();
             if (ledgerId == null) return;
 
-            var res = await _client.QueryLedgers(ledgerId);
+            var res = await Client.QueryLedgers(ledgerId);
 
             var ledgerInfo = res.Result.First(x => x.Key == ledgerId).Value;
             AssertLedgerInfo(ledgerInfo);
@@ -170,7 +176,7 @@ namespace KrakenCore.Tests
         {
             // "fee-info" param does not seem to be respected on Kraken's side. Not sure if bug ...
 
-            var res = await _client.GetTradeVolume(DefaultPair, includeFeeInfo: false);
+            var res = await Client.GetTradeVolume(DefaultPair, includeFeeInfo: false);
 
             AssertNotDefault(res.Result.Currency);
         }
@@ -179,7 +185,7 @@ namespace KrakenCore.Tests
         public async Task AddStandardOrder()
         {
             // Minimum volume to trade is 5 USD worth of currency.
-            var res = await _client.AddStandardOrder(
+            var res = await Client.AddStandardOrder(
                 DefaultPair,
                 "buy",
                 "market",
@@ -196,7 +202,7 @@ namespace KrakenCore.Tests
             // open order to be present.
             try
             {
-                await _client.CancelOpenOrder("invalid-order-id");
+                await Client.CancelOpenOrder("invalid-order-id");
                 Assert.True(false); // Fail.
             }
             catch (KrakenException ex)
@@ -264,18 +270,18 @@ namespace KrakenCore.Tests
             // orders. These must be called sequentially to ensure nonce is received sequentially by
             // the API.
 
-            var closedOrders = await _client.GetClosedOrders(true);
+            var closedOrders = await Client.GetClosedOrders(true);
             string result = selector(closedOrders.Result.Closed);
 
             if (result != null) return result;
 
-            var openOrders = await _client.GetOpenOrders(true);
+            var openOrders = await Client.GetOpenOrders(true);
             return selector(openOrders.Result.Open);
         }
 
         private async Task<string> TryGetLedgerId()
         {
-            var res = await _client.GetLedgersInfo();
+            var res = await Client.GetLedgersInfo();
             return res.Result.Ledgers.FirstOrDefault().Key;
         }
     }

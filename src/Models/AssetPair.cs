@@ -1,4 +1,4 @@
-﻿using KrakenCore.Utils;
+using KrakenCore.Utils;
 using Newtonsoft.Json;
 
 namespace KrakenCore.Models

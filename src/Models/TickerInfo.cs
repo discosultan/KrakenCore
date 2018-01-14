@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace KrakenCore.Models
 {
@@ -32,7 +32,7 @@ namespace KrakenCore.Models
         /// Volume weighted average price array({today}, {last 24 hours}).
         /// </summary>
         [JsonProperty("p")]
-        public decimal[] VWAP;
+        public decimal[] Vwap;
 
         /// <summary>
         /// Number of trades array({today}, {last 24 hours}).

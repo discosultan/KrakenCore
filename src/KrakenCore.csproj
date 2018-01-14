@@ -4,13 +4,15 @@
     <Authors>discosultan</Authors>
     <Description>Client for Kraken bitcoin exchange API.</Description>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageLicenseUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/discosultan/KrakenCore</PackageProjectUrl>
-    <PackageReleaseNotes>Fixed client usage of api call cost.</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/discosultan/KrakenCore/releases</PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/discosultan/KrakenCore/master/KrakenLogo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/discosultan/KrakenCore</RepositoryUrl>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0-alpha06</Version>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Version>1.0.0-alpha07</Version>
   </PropertyGroup>
 
   <ItemGroup>

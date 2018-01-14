@@ -21,7 +21,6 @@
 - 🔁 Asynchronous API using [async and await](https://docs.microsoft.com/en-us/dotnet/csharp/async)
 - 💪 Strongly typed models
 - 🛂 Covered with tests
-- &nbsp;✋ Supports API rate limiter
 - 🔐 Supports two-factor authentication
 
 ## 📦 Getting Started
@@ -40,6 +39,31 @@ foreach (var currency in response.Result)
 // ZEUR : 1000
 // XXBT : 1
 // XETH : 3
+```
+
+## 🔧 Extending Client
+
+The client supports two extensibility points: one right before a request to Kraken is dispatched and one right after a response is received. These points provide additional context specific information (for example, the cost of a particular call) and can be used to implement features such as rate limiting or logging.
+
+Sample extensions implemented in the test suite:
+
+```csharp
+var client = new KrakenClient(ApiKey, PrivateKey)
+{
+    InterceptRequest = async req =>
+    {
+        // Log request.
+        output.WriteLine(req.HttpRequest.ToString());
+        string content = await req.HttpRequest.Content.ReadAsStringAsync();
+        if (!string.IsNullOrWhiteSpace(content)) output.WriteLine(content);
+
+        // Wait if we have hit the API rate limit.
+        RateLimiter limiter = req.HttpRequest.RequestUri.OriginalString.Contains("/private/")
+            ? privateApiRateLimiter
+            : publicApiRateLimiter;
+        await limiter.WaitAccess(req.ApiCallCost);
+    }
+};
 ```
 
 ## 🙏 Related Work
